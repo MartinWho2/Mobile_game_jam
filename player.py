@@ -9,6 +9,10 @@ class Player(Moving_sprite):
         super().__init__(spawn, pygame.image.load(path + "media/robot_petit_3.png").convert_alpha(), round(tile_size * 2.5), map,
                          tile_size, groups_colliding, player_sprite_group)
         self.window = window
+        self.map = map
+        self.tile_size = tile_size
+        self.groups_colliding = groups_colliding
+        self.player_sprite_group = player_sprite_group
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.state = 'idle'
         self.path = path

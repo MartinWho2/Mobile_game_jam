@@ -44,7 +44,7 @@ def main():
             dt = 5.0
         display_fps(dt)
         pygame.display.flip()
-        window.fill((0, 0, 0))
+        window.fill((255, 255, 255))
         if in_game:
             game.update(dt)
             for event in pygame.event.get():
@@ -157,6 +157,12 @@ def main():
                     if menu.state == 3:
                         if menu.back_button.rect.collidepoint(event.pos):
                             menu.back_button.click(True)
+                    if menu.state == 4:
+                        if menu.resume_button.rect.collidepoint(event.pos):
+                            menu.resume_button.click(True)
+                        if menu.menu_button.rect.collidepoint(event.pos):
+                            menu.menu_button.click(True)
+
                 if event.type == pygame.MOUSEBUTTONUP:
                     if menu.state == 1:
                         if menu.play_button.clicking:
@@ -184,7 +190,6 @@ def main():
                                     if level.rect.collidepoint(event.pos):
                                         in_game = True
                                         game.level = a
-                                        print(game.level)
                                     level.click(False)
                                 a += 1
 

@@ -1,4 +1,7 @@
 import pygame
+import math
+
+from spritesheet import Spritesheet
 from interface_button import Interface_button as Int_button
 from fonctions import create_map
 from player import Player
@@ -18,17 +21,30 @@ class Game():
         button.fill((255, 255, 255))
         pygame.draw.rect(button, (128, 128, 128), arrow_right.get_rect(), width=1)
         jump_button = button.copy()
-        jump_button.blit(arrow_up,(0,0))
-        button.blit(arrow_right,(0,0))
-        arrow_left = pygame.transform.flip(button,True,False)
-        self.button_right = Int_button(button,pygame.Vector2(self.w/5,self.h*6/7),round(self.w/8),name="right")
-        self.button_left = Int_button(arrow_left,pygame.Vector2(self.w/40,self.h*6/7),round(self.w/8),name="left")
-        self.button_up = Int_button(jump_button,pygame.Vector2(self.w*6/7,self.h*6/7),round(self.w/8),name="up")
-        square_button = pygame.transform.scale(pygame.image.load(path+'media/squared_button.png').convert_alpha(),(50,50))
+        jump_button.blit(arrow_up, (0, 0))
+        button.blit(arrow_right, (0, 0))
+        arrow_left = pygame.transform.flip(button, True, False)
+        self.button_right = Int_button(button, pygame.Vector2(self.w / 5, self.h * 6 / 7), round(self.w / 8),
+                                       name="right")
+        self.button_left = Int_button(arrow_left, pygame.Vector2(self.w / 40, self.h * 6 / 7), round(self.w / 8),
+                                      name="left")
+        self.button_up = Int_button(jump_button, pygame.Vector2(self.w * 6 / 7, self.h * 6 / 7), round(self.w / 8),
+                                    name="up")
+        square_button = pygame.transform.scale(pygame.image.load(path + 'media/squared_button.png').convert_alpha(),
+                                               (100, 100))
         pause_button = square_button.copy()
-        pause_image = pygame.transform.scale(pygame.image.load(path+'media/pause.png').convert_alpha(),(50,50))
-        pause_button.blit(pause_image,(0,0))
-        self.pause_button = Int_button(pause_button, pygame.Vector2(self.w-55, 5), 50,name="pause")
+        pause_image = pygame.transform.scale(pygame.image.load(path + 'media/pause.png').convert_alpha(), (100, 100))
+        pause_button.blit(pause_image, (0, 0))
+        self.pause_button = Int_button(pause_button, pygame.Vector2(self.w - 105, 5), 100, name="pause")
+        reset_button = square_button.copy()
+        reset_image = pygame.transform.scale(pygame.image.load(path + 'media/reset.png').convert_alpha(), (100, 100))
+        reset_button.blit(reset_image, (0, 0))
+        self.reset_button = Int_button(reset_button, pygame.Vector2(self.w - 210, 5), 100, name="reset")
+        action_surface = pygame.Surface((round(self.w / 8), round(self.w / 8)))
+        pygame.draw.circle(action_surface, (150, 150, 150), (round(self.w / 16), round(self.w / 16)),
+                           round(self.w / 16))
+        self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 6 / 7),
+                                        round(self.w / 16), name="action")
         self.level = 1
         self.buttons_interface = pygame.sprite.Group(self.button_right, self.button_left, self.button_up,
                                                      self.pause_button, self.reset_button, self.action_button)
