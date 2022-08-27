@@ -3,15 +3,19 @@ from game import Game
 from menu import Menu
 from sys import platform as _sys_platform
 from os import environ
+import time
+from head import Head
 
 pygame.init()
-window = pygame.display.set_mode((1280,720))
+window = pygame.display.set_mode((1280, 720))
+clock = pygame.time.Clock()
+fps = 60
 
 
 def platform():
     if 'ANDROID_ARGUMENT' in environ:
         return "android"
-    elif _sys_platform in ('win32','win64','cygwin'):
+    elif _sys_platform in ('win32', 'win64', 'cygwin'):
         return "win"
 
 def display_fps(dt):
@@ -29,11 +33,20 @@ def main():
     in_game = False
     game = Game(window, path)
     menu = Menu(window, path)
+    before = time.time()
+    time.sleep(0.1)
+
     while running:
+        clock.tick(fps)
+        dt = (time.time() - before) * fps
+        before = time.time()
+        if dt > 5:
+            dt = 5.0
+        display_fps(dt)
         pygame.display.flip()
         window.fill((0, 0, 0))
         if in_game:
-            game.update()
+            game.update(dt)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -51,8 +64,8 @@ def main():
 
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
-                    finger_id = event.finger_id+1
-                    print(f"finger-up : {event.finger_id+1}")
+                    finger_id = event.finger_id + 1
+                    print(f"finger-up : {event.finger_id + 1}")
                     for value in game.buttons.items():
                         if value[1] == finger_id:
                             print(f"Releasing touch on button {value[0].name}")

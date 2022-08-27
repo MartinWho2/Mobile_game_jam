@@ -1,5 +1,6 @@
 import pygame
 
+
 def draw_rounded_rect(surface: pygame.surface, rect, rect_color, bg_color, rounding=35):
     pygame.draw.rect(surface, rect_color, rect)
     quarter_circle = pygame.surface.Surface((rounding, rounding))

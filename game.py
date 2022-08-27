@@ -5,17 +5,18 @@ from player import Player
 from head import Head
 from level_infos import dictionnaire
 
+
 class Game():
-    def __init__(self, window: pygame.surface.Surface, path:str):
+    def __init__(self, window: pygame.surface.Surface, path: str):
         self.window = window
         self.path = path
         self.tile_size = 40
         self.w, self.h = self.window.get_size()
-        arrow_right = pygame.image.load(path+"media/arrow.png").convert_alpha()
-        arrow_up = pygame.image.load(path+"media/arrow_up.png")
+        arrow_right = pygame.image.load(path + "media/arrow.png").convert_alpha()
+        arrow_up = pygame.image.load(path + "media/arrow_up.png")
         button = pygame.surface.Surface(arrow_right.get_size())
-        button.fill((255,255,255))
-        pygame.draw.rect(button,(128,128,128),arrow_right.get_rect(),width=1)
+        button.fill((255, 255, 255))
+        pygame.draw.rect(button, (128, 128, 128), arrow_right.get_rect(), width=1)
         jump_button = button.copy()
         jump_button.blit(arrow_up,(0,0))
         button.blit(arrow_right,(0,0))
