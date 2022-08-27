@@ -1,50 +1,58 @@
 import pygame
+from moving_sprite import Moving_sprite
+from arm import Arm
 
 
-class Player():
-    def __init__(self, window: pygame.Surface, spawn: pygame.Vector2, tile_size):
+class Player(Moving_sprite):
+    def __init__(self, spawn: pygame.Vector2, map, tile_size: int, window: pygame.Surface, path: str,
+                 groups_colliding, player_sprite_group, arm_sprite):
+        super().__init__(spawn, pygame.image.load(path + "media/robot_petit_3.png").convert_alpha(), round(tile_size * 2.5), map,
+                         tile_size, groups_colliding, player_sprite_group)
         self.window = window
         self.w, self.h = self.window.get_width(), self.window.get_height()
-        self.image = None
-        self.player_w, self.player_h = 2 * tile_size, 2 * tile_size
-        self.rect = pygame.rect.Rect(spawn.x, spawn.y, self.player_w, self.player_h)
-        self.position = pygame.Vector2(self.rect.x, self.rect.y)
-        self.speed = pygame.Vector2(0, 0)
-        self.jumping = None
-        self.state = 'idle'  # Possible states: idle, run, jump, climb
+        self.state = 'idle'
+        self.path = path
 
-    def blit_player(self, scroll: pygame.Vector2, spritesheet, dt):
-        self.image = spritesheet.animate(self.state, dt)
-        self.window.blit(self.image, (self.rect.x - scroll.x - self.rect.w / 2, self.rect.y - scroll.y - self.rect.h))
+        self.glass_group = self.groups_colliding[1]
 
-    def check_collisions(self, neighbour_tiles, tile_types):
-        hit_list = []
-        for idx, tile in enumerate(neighbour_tiles):
-            if self.rect.colliderect(tile):
-                hit_list.append([tile, tile_types[idx]])
-        return hit_list
+        # Arms
+        self.arms_finish = arm_sprite
+        self.arms = pygame.sprite.Group()
+        self.idle_mask = pygame.image.load(self.path+"media/player/idle_mask.png").convert_alpha()
+        idle_mask = pygame.mask.from_surface(self.idle_mask)
+        self.masks = {"idle":idle_mask}
 
-    def move(self, dt, keys):
+    def move(self, game, dt):
         # Key input
-        jumping_attempt = False
-        if keys.get(pygame.K_a):
-            self.speed.x = -self.w / 300 * dt
+        self.speed.x = 0
+        if game.buttons[game.button_left]:
+            self.speed.x += -self.w / 350 * dt
+        if game.buttons[game.button_right]:
+            self.speed.x += self.w / 350 * dt
+        self.pos.x += self.speed.x
+        self.rect.x = round(self.pos.x)
+        hits = self.check_collision()
+        if hits:
+            movement = self.collide(hits, False)
+        self.fall(dt)
+
+        # Update state
+        if self.is_jumping:
+            self.state = 'jump'
+        elif self.speed.x < 0:
             self.state = 'run_left'
-        elif keys.get(pygame.K_d):
-            self.speed.x = self.w / 300 * dt
+        elif self.speed.x > 0:
             self.state = 'run_right'
         else:
-            self.speed.x = 0
             self.state = 'idle'
-        if keys.get(pygame.K_w):
-            jumping_attempt = True
-            if not self.jumping:
-                self.jumping = True
-                self.state = 'jump'
-                self.speed.y = - self.h / 70 * dt
-        if self.speed.y < self.h / 100:
-            self.speed.y += 0.7 * dt  # Gravity
 
-        self.rect += self.speed
-        self.rect.x = round(self.rect.x)
-        self.rect.y = round(self.rect.y)
+    def jump(self):
+        if not self.is_jumping:
+            self.is_jumping = True
+            self.speed.y = -7
+
+    def launch_arm(self, movement):
+        center = pygame.Vector2(self.rect.centerx, self.rect.centery)
+        arm = Arm(self.window, center, movement, self.map, self.tile_size, self.groups_colliding,
+                  self.player_sprite_group, 2 * self.tile_size, self.path,self.arms_finish)
+        self.arms.add(arm)

@@ -55,6 +55,7 @@ class Menu:
 
     def update(self):
         if self.state == 1:
+            self.window.blit(self.title_screen,(0,0))
             self.window.blit(self.play_button.image, self.play_button.rect)
             self.window.blit(self.options_button.image, self.options_button.rect)
             self.window.blit(self.quit_button.image, self.quit_button.rect)

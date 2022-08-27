@@ -14,6 +14,10 @@ def platform():
     elif _sys_platform in ('win32','win64','cygwin'):
         return "win"
 
+def display_fps(dt):
+    fps_text = pygame.font.SysFont("arial",30).render(str(round(60 / dt, 3)), False, (0, 0, 0))
+    window.blit(fps_text, (0, 0))
+
 
 def main():
     platform_used = platform()
@@ -33,18 +37,18 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                elif event.type == pygame.FINGERDOWN:
-                    print(f"finger-down : {event.finger_id+1}")
-                    finger_id = event.finger_id+1
+                    running = False
 
-                #elif event.type == pygame.MOUSEBUTTONDOWN:
-                    x,y = event.x*window.get_width(), event.y* window.get_height()
+                elif event.type == pygame.FINGERDOWN:
+                    print(f"finger-down : {event.finger_id + 1}")
+                    finger_id = event.finger_id + 1
+                    x, y = event.x * window.get_width(), event.y * window.get_height()
                     for button in game.buttons_interface:
                         if button.rect.collidepoint(x, y):
                             print(f"Clicking on button {button.name} with finger {event.finger_id}")
                             button.click(True)
                             game.buttons[button] = finger_id
-                #elif event.type == pygame.MOUSEBUTTONUP:
+
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
                     finger_id = event.finger_id+1
@@ -58,6 +62,61 @@ def main():
                             if game.pause_button.rect.collidepoint(x, y):
                                 in_game = False
                                 menu.state = 4
+                            if game.reset_button.rect.collidepoint(x, y):
+                                game.restart()
+                elif event.type == pygame.FINGERMOTION:
+                    pass
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if game.action_button.rect.collidepoint(event.pos):
+                        game.action_button.click(True)
+                    if game.reset_button.rect.collidepoint(event.pos):
+                        game.restart()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if game.action_button.clicking:
+                        game.action_button.click(False)
+                        if game.arms_available > 0:
+                            if game.distance > game.action_button.rect.w/2:
+                                game.player.launch_arm(game.arms_direction)
+                                game.arms_available -= 1
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_a:
+                        game.button_left.click(True)
+                        game.buttons[game.button_left] = True
+                    elif event.key == pygame.K_d:
+                        game.buttons[game.button_right] = True
+                        game.button_right.click(True)
+                    elif event.key == pygame.K_w:
+                        game.buttons[game.button_up] = True
+                        game.button_up.click(True)
+                        if game.player_or_head:  # If player is moving
+                            game.player.jump()
+                        else:  # If head is moving
+                            game.head.jump()
+                    elif event.key == pygame.K_ESCAPE:
+                        game.buttons[game.pause_button] = True
+                        game.pause_button.click(True)
+                    if event.key == pygame.K_r:
+                        game.head.kill()  # Alternate between player and head
+                        if game.player_or_head:
+                            game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
+                                             game.collidable_sprites, [game.head_sprite])
+                        game.player_or_head = not game.player_or_head
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_a:
+                        game.button_left.click(False)
+                        game.buttons[game.button_left] = False
+                    elif event.key == pygame.K_d:
+                        game.buttons[game.button_right] = False
+                        game.button_right.click(False)
+                    elif event.key == pygame.K_w:
+                        game.buttons[game.button_up] = False
+                        game.button_up.click(False)
+
+                    elif event.key == pygame.K_ESCAPE:
+                        game.buttons[game.pause_button] = False
+                        game.pause_button.click(False)
+                        in_game = False
+                        menu.state = 4
 
         else:
             menu.update()
@@ -121,6 +180,20 @@ def main():
                             if menu.back_button.rect.collidepoint(event.pos):
                                 menu.state = 1
                             menu.back_button.click(False)
+
+                    if menu.state == 4:
+                        if menu.resume_button.clicking:
+                            if menu.resume_button.rect.collidepoint(event.pos):
+                                in_game = True
+                            menu.resume_button.click(False)
+                        if menu.menu_button.clicking:
+                            if menu.menu_button.rect.collidepoint(event.pos):
+                                menu.state = 1
+                            menu.menu_button.click(False)
+
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_ESCAPE and menu.state == 4:
+                        in_game = True
 
 
 if __name__ == "__main__":
