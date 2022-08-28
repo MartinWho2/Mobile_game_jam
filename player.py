@@ -24,7 +24,7 @@ class Player(Moving_sprite):
         self.arms = pygame.sprite.Group()
         self.idle_mask = pygame.image.load(self.path+"media/player/idle_mask.png").convert_alpha()
         idle_mask = pygame.mask.from_surface(self.idle_mask)
-        self.masks = {"idle":idle_mask}
+        self.masks = {"idle": idle_mask}
 
     def move(self, game, dt):
         # Key input

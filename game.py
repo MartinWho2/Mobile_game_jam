@@ -51,11 +51,16 @@ class Game():
         self.buttons = {self.button_left: False, self.button_right: False, self.button_up: False,
                         self.pause_button: False, self.action_button: False}
         self.map = create_map(self.path, self.level)
-        self.tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/tile_test.png").convert_alpha(),(self.tile_size, self.tile_size))
-        self.glass_image = pygame.transform.scale(pygame.image.load(self.path + 'media/vitre.png').convert_alpha(),(self.tile_size, self.tile_size))
-        self.vent_image = pygame.transform.scale(pygame.image.load(self.path + 'media/vent.png').convert_alpha(),(self.tile_size, self.tile_size))
-        self.back_tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/back_tile.png").convert_alpha(),(self.tile_size, self.tile_size))
 
+        self.tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/tile_test.png").convert_alpha(),
+                                                 (self.tile_size, self.tile_size))
+        self.glass_image = pygame.transform.scale(pygame.image.load(self.path + 'media/vitre.png').convert_alpha(),
+                                                  (self.tile_size, self.tile_size))
+        self.vent_image = pygame.transform.scale(pygame.image.load(self.path + 'media/vent.png').convert_alpha(),
+                                                 (self.tile_size, self.tile_size))
+        self.back_tile_image = pygame.transform.scale(
+            pygame.image.load(self.path + "media/back_tile.png").convert_alpha(), (self.tile_size, self.tile_size))
+        self.map_image = self.create_map_image()
         # Sprites
         self.player_sprite = pygame.sprite.Group()
         self.laser_sprites = pygame.sprite.Group()
@@ -88,41 +93,59 @@ class Game():
 
 
     def update(self, dt):
+        time = pygame.time.get_ticks()
         self.blit_map()
+        time2 = pygame.time.get_ticks()
+        print(f"The map is blitted in {time2-time} ms")
         for button in self.buttons_interface:
             self.window.blit(button.image, button.rect)
-
+        time = pygame.time.get_ticks()
+        print(f"The buttons are blitted in {time - time2} ms")
         if self.player_or_head:
             self.player.move(self, dt)
+            time2 = pygame.time.get_ticks()
+            print(f"The player movements are done in {time2 - time} ms")
         else:
             self.player.fall(dt)
             self.head.move(self, dt)
+
             self.blit_head(self.head_spritesheet, dt)
 
         self.blit_player(self.player_spritesheet, dt)
-        # Arms
+        time = pygame.time.get_ticks()
+        print(f"The player is blitted in {time - time2} ms")
+        # Action button
         if self.action_button.clicking:
-            pos = pygame.mouse.get_pos()
-            self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
-            if self.distance > self.action_button.rect.w/2:
-                self.arm_aiming(self.action_button.rect.center, pos)
+            if self.player_or_head:
+                pos = pygame.mouse.get_pos()
+                self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
+                if self.distance > self.action_button.rect.w / 2:
+                    self.arm_aiming(self.action_button.rect.center, pos)
+
+        time = pygame.time.get_ticks()
         self.player.arms.draw(self.window)
+        time2 = pygame.time.get_ticks()
+        print(f"The arms are blitted in {time2 - time} ms")
         for arm in self.player.arms:
             if arm.moving:
                 arm.move(dt)
+        print(f"the arms move in {pygame.time.get_ticks()-time2} ms")
 
     def load_new_level(self, level: int):
         self.level = level
+        self.door_sprites.empty()
+        self.buttons_in_game.empty()
+        self.vent_sprites.empty()
         self.map = create_map(self.path, level)
 
     def blit_map(self):
-        for row in range(len(self.map)):
-            for column in range(len(self.map[row])):
-                tile = self.map[row][column]
-                #if tile == "0":
-                #    self.window.blit(self.back_tile_image,(column * self.tile_size, row * self.tile_size))
-                if tile == "1":
-                    self.window.blit(self.tile_image, (column * self.tile_size, row * self.tile_size))
+        timing = pygame.time.get_ticks()
+        self.window.blit(self.map_image, (0, 0))
+        timing_2 = pygame.time.get_ticks()
+        print(f"blit map {timing_2-timing} ms")
+        for r_index, row in enumerate(self.map):
+            for c_index, item in enumerate(row):
+                tile = item
                 if tile == "2":
                     self.window.blit(self.glass_image, (column * self.tile_size, row * self.tile_size))
 
@@ -135,7 +158,9 @@ class Game():
 
     def blit_head(self, spritesheet, dt):
         self.head.image = spritesheet.animate(self.head.state, dt)
-        self.head.mask = pygame.mask.from_surface(self.head.image)
+        #self.player.state = 'without_head'
+        #self.head.mask = pygame.mask.from_surface(self.head.image)
+        self.head.mask = self.head.masks["idle"]
         self.window.blit(self.head.image, (self.head.rect.x, self.head.rect.y))
 
     def arm_aiming(self, initial_pos, actual_pos):

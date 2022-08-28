@@ -1,5 +1,5 @@
 import pygame
-
+import player
 
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
@@ -39,14 +39,15 @@ class Moving_sprite(pygame.sprite.Sprite):
         # Collision with tiles
         if tiles:
             # Checks for collisions with tiles near the sprite
-            for row in range(len(self.tiles)):
-                for column in range(len(self.tiles[row])):
-                    if self.tiles[row][column] != "0":
-                        mask = self.collide_with_mask(self.tile, (column * self.tile_size, row * self.tile_size))
+            for r_index, row in enumerate(self.tiles):
+                for c_index, item in enumerate(row):
+                    tile = item
+                    if tile != "0":
+                        mask = self.collide_with_mask(self.tile, (c_index * self.tile_size, r_index * self.tile_size))
                         if mask.count():
-                            if self.tiles[row][column] == "2" and breaking:
-                                self.tiles[row][column] = "0"
-                                self.breaking_glass(row, column)
+                            if item == "2" and breaking:
+                                self.tiles[r_index][c_index] = "0"
+                                self.breaking_glass(r_index, c_index)
                             else:
                                 get_hits.append(mask)
 

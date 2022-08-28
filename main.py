@@ -47,6 +47,7 @@ def main():
         window.fill((255, 255, 255))
         if in_game:
             game.update(dt)
+            timing = pygame.time.get_ticks()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -77,6 +78,11 @@ def main():
                                 menu.state = 4
                             if game.reset_button.rect.collidepoint(x, y):
                                 game.restart()
+                            if game.button_up.rect.collidepoint(x,y):
+                                if game.player_or_head:  # If player is moving
+                                    game.player.jump()
+                                else:  # If head is moving
+                                    game.head.jump()
                 elif event.type == pygame.FINGERMOTION:
                     pass
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -130,6 +136,7 @@ def main():
                         game.pause_button.click(False)
                         in_game = False
                         menu.state = 4
+            #print(f"the events are handled in {pygame.time.get_ticks()-timing} ms")
 
         else:
             menu.update()

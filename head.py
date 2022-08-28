@@ -6,6 +6,7 @@ class Head(Moving_sprite):
     def __init__(self, player_pos: pygame.Vector2, tiles, tile_size: int, window: pygame.Surface, path: str,
                  groups_colliding, head_sprite_group):
         self.image = pygame.image.load(path + 'media/head.png').convert_alpha()
+        self.path = path
         super().__init__(player_pos, self.image, round(tile_size * 5 / 8), tiles, tile_size, groups_colliding,
                          head_sprite_group)
         self.window = window
