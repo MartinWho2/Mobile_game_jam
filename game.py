@@ -78,6 +78,7 @@ class Game():
         self.arm_sprite = pygame.sprite.Group()
         self.buttons_in_game = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
+        self.opened_door_sprites = pygame.sprite.Group()
         self.glass_sprites = pygame.sprite.Group()
         self.vent_sprites = pygame.sprite.Group()
         self.tower_sprites = pygame.sprite.Group()
@@ -150,8 +151,7 @@ class Game():
             self.level += 1
             self.restart()
 
-    def load_new_level(self, level: int):
-        self.level = level
+    def load_new_level(self):
         self.door_sprites.empty()
         self.opened_door_sprites.empty()
         self.portal_sprites.empty()
@@ -169,10 +169,13 @@ class Game():
             self.vent_sprites.add(vent)
             self.vent_sprites.add(vent2)
         for infos in self.levels_infos['door'][self.level - 1]:
-            door = Door(self.path, infos[0], infos[1],self.tile_size, infos[2])
-            self.door_sprites.add(door)
+            door = Door(self.path, infos[0], infos[1], self.tile_size, infos[2], infos[3])
+            if door.opened:
+                self.opened_door_sprites.add(door)
+            else:
+                self.door_sprites.add(door)
         for infos in self.levels_infos['button'][self.level - 1]:
-            button = Button(self.path, infos[0], infos[1],self.tile_size)
+            button = Button(self.path, infos[0], infos[1], self.tile_size)
             self.buttons_in_game.add(button)
         for infos in self.levels_infos['laser'][self.level - 1]:
             laser = Tower(self.path, infos[0], infos[1],infos[2], self.tile_size,self.map)
@@ -195,13 +198,18 @@ class Game():
                 if tile == "2":
                     self.window.blit(self.glass_image, (c_index * self.tile_size, r_index * self.tile_size))
         timing = pygame.time.get_ticks()
-        print(f"blit glass {timing - timing_2}")
+        #print(f"blit glass {timing - timing_2}")
         self.vent_sprites.draw(self.window)
         timing_2 = pygame.time.get_ticks()
-        print(f"blit vent {timing_2 - timing} ms")
+        for button in self.buttons_in_game:
+            if button.on == True:
+                self.window.blit(button.image_on, button.rect)
+            else:
+                self.window.blit(button.image_off, button.rect)
+        #print(f"blit vent {timing_2 - timing} ms")
         self.door_sprites.draw(self.window)
         timing = pygame.time.get_ticks()
-        print(f"blit doors {timing - timing_2}")
+        #print(f"blit doors {timing - timing_2}")
         self.laser_sprites.draw(self.window)
         self.tower_sprites.draw(self.window)
         self.portal_sprites.draw(self.window)
@@ -256,9 +264,9 @@ class Game():
             self.arms_direction = center
 
     def restart(self):
-        self.load_new_level(self.level)
+        self.load_new_level()
         self.arms_available = 2
-        spawn = pygame.Vector2(dictionnaire["spawn"][self.level][0],dictionnaire["spawn"][self.level][1])
+        spawn = pygame.Vector2(dictionnaire["spawn"][self.level-1][0],dictionnaire["spawn"][self.level-1][1])
         self.player = Player(spawn, self.map, self.tile_size, self.window, self.path,
                              self.collidable_sprites, [self.player_sprite], self.arm_sprite)
         self.player_or_head = True

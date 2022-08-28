@@ -2,7 +2,7 @@ import pygame
 
 
 class Door(pygame.sprite.Sprite):
-    def __init__(self, path, coo, group, tile_size, turned = False):
+    def __init__(self, path, coo, num, tile_size, opened=False, turned=False):
         super().__init__()
         self.tile_size = tile_size
         if turned:
@@ -14,4 +14,6 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = coo[0] * tile_size
         self.rect.y = coo[1] * tile_size
-        self.group = group
+        self.num = num
+        self.opened = opened
+

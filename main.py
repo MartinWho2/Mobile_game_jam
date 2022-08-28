@@ -103,6 +103,26 @@ def main():
                                     game.player.launch_arm(game.arms_direction)
                                     game.arms_available -= 1
                         else:
+                            for button in game.buttons_in_game:
+                                if game.head.rect.colliderect(button):
+                                    button.on = not button.on
+                                    for num in button.num:
+                                        for door in game.door_sprites:
+                                            if num == door.num:
+                                                door.opened = not door.opened
+                                                game.opened_door_sprites.add(door)
+                                                game.door_sprites.remove(door)
+                                                break
+                                        else:
+                                            for door in game.opened_door_sprites:
+                                                if num == door.num:
+                                                    door.opened = not door.opened
+                                                    game.door_sprites.add(door)
+                                                    game.opened_door_sprites.remove(door)
+                                            for laser in game.laser_sprites:
+                                                if num == laser.num:
+                                                    laser.opened = not laser.opened
+
                             for vent in game.vent_sprites:
                                 if game.head.rect.colliderect(vent.rect):
                                     game.head.pos = pygame.Vector2(vent.dest[0], vent.dest[1])
