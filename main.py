@@ -36,6 +36,8 @@ def main():
     before = time.time()
     time.sleep(0.1)
 
+
+
     while running:
         clock.tick(fps)
         dt = (time.time() - before) * fps
@@ -165,6 +167,8 @@ def main():
             #print(f"the events are handled in {pygame.time.get_ticks()-timing} ms")
 
         else:
+            #game.player.running_player(game, dt)
+            #game.blit_player(game.player_spritesheet, dt)
             menu.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

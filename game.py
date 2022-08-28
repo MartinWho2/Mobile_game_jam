@@ -11,6 +11,7 @@ from vent import Vent
 from door import Door
 from button import Button
 from laser import Tower
+from portal import Portal
 
 
 class Game():
@@ -81,7 +82,8 @@ class Game():
         self.vent_sprites = pygame.sprite.Group()
         self.tower_sprites = pygame.sprite.Group()
         self.laser_sprites = pygame.sprite.Group()
-        self.collidable_sprites = [self.door_sprites, self.glass_sprites, self.arm_sprite, self.tower_sprites, self.laser_sprites]
+        self.portal_sprites = pygame.sprite.Group()
+        self.collidable_sprites = [self.door_sprites, self.glass_sprites, self.arm_sprite, self.tower_sprites]
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
@@ -102,6 +104,7 @@ class Game():
         self.head_spritesheet = Spritesheet('head', path)
 
         self.levels_infos = dictionnaire
+        self.portal_rect = pygame.rect.Rect(0, 0, 10, 10)  # Modifié dans load level
 
     def update(self, dt):
         time = pygame.time.get_ticks()
@@ -150,6 +153,8 @@ class Game():
     def load_new_level(self, level: int):
         self.level = level
         self.door_sprites.empty()
+        self.opened_door_sprites.empty()
+        self.portal_sprites.empty()
         self.buttons_in_game.empty()
         self.vent_sprites.empty()
         self.laser_sprites.empty()
@@ -170,8 +175,14 @@ class Game():
             button = Button(self.path, infos[0], infos[1],self.tile_size)
             self.buttons_in_game.add(button)
         for infos in self.levels_infos['laser'][self.level - 1]:
-            laser = Tower(self.path, infos[0], infos[1], self.tile_size,self.map)
-            self.laser_sprites.add(laser)
+            laser = Tower(self.path, infos[0], infos[1],infos[2], self.tile_size,self.map)
+            self.tower_sprites.add(laser)
+            self.laser_sprites.add(laser.laser)
+        for infos in self.levels_infos['portal'][self.level - 1]:
+            portal = Portal(self.path, infos, self.tile_size)
+            if portal.type == 'end':
+                self.portal_rect = portal.rect
+            self.portal_sprites.add(portal)
 
     def blit_map(self):
         timing = pygame.time.get_ticks()
@@ -192,6 +203,8 @@ class Game():
         timing = pygame.time.get_ticks()
         print(f"blit doors {timing - timing_2}")
         self.laser_sprites.draw(self.window)
+        self.tower_sprites.draw(self.window)
+        self.portal_sprites.draw(self.window)
 
     def create_map_image(self):
         map_y, map_x = len(self.map), len(self.map[1])

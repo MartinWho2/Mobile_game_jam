@@ -62,3 +62,9 @@ class Player(Moving_sprite):
         arm = Arm(self.window, center, movement, self.map, self.tile_size, self.groups_colliding,
                   self.player_sprite_group, 2 * self.tile_size, self.path,self.arms_finish)
         self.arms.add(arm)
+
+    def running_player(self, game, dt):
+        self.speed.x += self.w / 350 * dt
+
+        if self.rect.x > self.w:
+            self.rect.x = -self.rect.w
