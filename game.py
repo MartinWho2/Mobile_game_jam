@@ -73,14 +73,14 @@ class Game():
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
-                             self.collidable_sprites,[self.player_sprite],self.arm_sprite)
+                             self.collidable_sprites, [self.player_sprite], self.arm_sprite)
         self.head = Head(pygame.Vector2(0, 0), self.map, self.tile_size, self.window, self.path,
                          self.collidable_sprites, [self.head_sprite])
         self.player_or_head = True  # Player is True, head is False
         self.arm_detached = False
 
         # Arms
-        self.arms_available = 10
+        self.arms_available = 2
         self.arms_direction = pygame.Vector2(0, 0)
         self.pointing_arrow = pygame.image.load(path + "media/pointing_arrow.png").convert_alpha()
         self.distance = 0
@@ -90,7 +90,6 @@ class Game():
         self.head_spritesheet = Spritesheet('head', path)
 
         self.levels_infos = dictionnaire
-
 
     def update(self, dt):
         time = pygame.time.get_ticks()

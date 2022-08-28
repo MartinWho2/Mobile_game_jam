@@ -115,11 +115,17 @@ def main():
                         game.buttons[game.pause_button] = True
                         game.pause_button.click(True)
                     if event.key == pygame.K_r:
-                        game.head.kill()  # Alternate between player and head
                         if game.player_or_head:
                             game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
                                              game.collidable_sprites, [game.head_sprite])
-                        game.player_or_head = not game.player_or_head
+                            game.player.state = f"without_head_{game.arms_available}"
+                            game.player_or_head = not game.player_or_head
+
+                        else:
+                            if pygame.sprite.collide_mask(game.player, game.head):
+                                game.head.kill()  # Alternate between player and head
+                                game.player_or_head = not game.player_or_head
+
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         game.button_left.click(False)

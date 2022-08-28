@@ -50,6 +50,8 @@ class Player(Moving_sprite):
         else:
             self.state = 'idle'
 
+        self.state += f'_{game.arms_available}'
+
     def jump(self):
         if not self.is_jumping:
             self.is_jumping = True

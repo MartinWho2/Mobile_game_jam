@@ -1,6 +1,7 @@
 import pygame
 import player
 
+
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
                  groups_colliding: list[pygame.sprite.Group], groups_including: list[pygame.sprite.Group],
@@ -32,7 +33,8 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
 
-    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal", breaking=False) -> list[pygame.mask.Mask]:
+    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal", breaking=False) -> list[
+        pygame.mask.Mask]:
         if sprite_groups == "normal":
             sprite_groups = self.sprite_elements
         get_hits = []
@@ -73,7 +75,9 @@ class Moving_sprite(pygame.sprite.Sprite):
                     movement = self.find_bits_from_mask(mask, "down")
                     self.pos.y -= movement
                     self.is_jumping = False
-                    self.state = 'idle'
+                    if self.__class__ == player.Player:
+                        if 'without_head' not in self.state:
+                            self.state = 'idle'
                 elif self.speed.y <= 0:
                     movement = self.find_bits_from_mask(mask, "up")
                     self.pos.y += movement
@@ -97,7 +101,7 @@ class Moving_sprite(pygame.sprite.Sprite):
     def find_bits_from_mask(mask: pygame.mask.Mask, direction: str) -> int:
         size = mask.get_size()
         found = False
-        if direction in {"left","right"}:
+        if direction in {"left", "right"}:
             for column in range(size[0]):
                 continue_finding = False
                 for row in range(size[1]):
@@ -134,15 +138,15 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.collide(hits, True)
 
     def breaking_glass(self, row, column):
-        if self.tiles[row+1][column] == "2":
+        if self.tiles[row + 1][column] == "2":
             self.tiles[row + 1][column] = "0"
-            self.breaking_glass(row+1,column)
-        if self.tiles[row][column+1] == "2":
-            self.tiles[row][column+1] = "0"
-            self.breaking_glass(row, column+1)
-        if self.tiles[row-1][column] == "2":
-            self.tiles[row-1][column] = "0"
-            self.breaking_glass(row-1, column)
-        if self.tiles[row][column-1] == "2":
-            self.tiles[row][column-1] = "0"
-            self.breaking_glass(row, column-1)
+            self.breaking_glass(row + 1, column)
+        if self.tiles[row][column + 1] == "2":
+            self.tiles[row][column + 1] = "0"
+            self.breaking_glass(row, column + 1)
+        if self.tiles[row - 1][column] == "2":
+            self.tiles[row - 1][column] = "0"
+            self.breaking_glass(row - 1, column)
+        if self.tiles[row][column - 1] == "2":
+            self.tiles[row][column - 1] = "0"
+            self.breaking_glass(row, column - 1)

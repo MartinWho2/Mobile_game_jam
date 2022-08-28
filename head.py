@@ -11,13 +11,15 @@ class Head(Moving_sprite):
                          head_sprite_group)
         self.window = window
         self.w, self.h = self.window.get_size()
-        self.detached = False
-        self.state = None
+        self.state = 'jump'
+        self.idle_mask = pygame.image.load(self.path + "media/head/idle_mask.png").convert_alpha()
+        idle_mask = pygame.mask.from_surface(self.idle_mask)
+        self.masks = {"idle": idle_mask}
 
         self.animate_detachment()
 
     def animate_detachment(self):
-        self.speed = pygame.Vector2(self.w / 200, self.w / 200)
+        self.speed = pygame.Vector2(-self.w / 200, self.w / 200)
 
     def move(self, game, dt):
         # Key input
