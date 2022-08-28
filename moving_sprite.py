@@ -33,7 +33,7 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
 
-    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal", breaking=False) -> list[
+    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal",return_sprite=False, breaking=False) -> list[
         pygame.mask.Mask]:
         if sprite_groups == "normal":
             sprite_groups = self.sprite_elements
@@ -58,6 +58,8 @@ class Moving_sprite(pygame.sprite.Sprite):
             for element in group:
                 mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
                 if mask.count():
+                    if return_sprite:
+                        return element
                     get_hits.append(mask)
 
         return get_hits

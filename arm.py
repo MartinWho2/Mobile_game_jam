@@ -28,7 +28,7 @@ class Arm(Moving_sprite):
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.arm_finish = arm_finish
 
-    def move(self, dt):
+    def move(self, dt, lasers):
         self.speed = self.movement*dt
         self.pos += self.speed
         self.rect.x = round(self.pos.x)
@@ -39,6 +39,11 @@ class Arm(Moving_sprite):
             self.movement = 0, 0
             self.moving = False
             self.arm_finish.add(self)
+            laser = self.check_collision(tiles=False,sprite_groups=[lasers],return_sprite=True)
+            if laser:
+                arm_tile = (math.floor(self.rect.centerx/self.tile_size),math.floor(self.rect.centery/self.tile_size))
+                if laser.direction == "up":
+                    pass
         hits = self.check_collision(breaking=True)
         self.collide(hits, True)
         if hits:

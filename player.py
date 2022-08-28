@@ -55,7 +55,7 @@ class Player(Moving_sprite):
     def jump(self):
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -7
+            self.speed.y = -8
 
     def launch_arm(self, movement):
         center = pygame.Vector2(self.rect.centerx, self.rect.centery)

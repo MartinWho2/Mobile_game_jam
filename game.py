@@ -107,15 +107,15 @@ class Game():
         time = pygame.time.get_ticks()
         self.blit_map()
         time2 = pygame.time.get_ticks()
-        print(f"The map is blitted in {time2-time} ms")
+        #print(f"The map is blitted in {time2-time} ms")
         for button in self.buttons_interface:
             self.window.blit(button.image, button.rect)
         time = pygame.time.get_ticks()
-        print(f"The buttons are blitted in {time - time2} ms")
+        #print(f"The buttons are blitted in {time - time2} ms")
         if self.player_or_head:
             self.player.move(self, dt)
             time2 = pygame.time.get_ticks()
-            print(f"The player movements are done in {time2 - time} ms")
+            #print(f"The player movements are done in {time2 - time} ms")
         else:
             self.player.fall(dt)
             self.head.move(self, dt)
@@ -124,7 +124,7 @@ class Game():
 
         self.blit_player(self.player_spritesheet, dt)
         time = pygame.time.get_ticks()
-        print(f"The player is blitted in {time - time2} ms")
+        #print(f"The player is blitted in {time - time2} ms")
         # Action button
         if self.action_button.clicking:
             if self.player_or_head:
@@ -136,18 +136,27 @@ class Game():
         time = pygame.time.get_ticks()
         self.player.arms.draw(self.window)
         time2 = pygame.time.get_ticks()
-        print(f"The arms are blitted in {time2 - time} ms")
+        #print(f"The arms are blitted in {time2 - time} ms")
         for arm in self.player.arms:
             if arm.moving:
-                arm.move(dt)
-        print(f"the arms move in {pygame.time.get_ticks()-time2} ms")
+                arm.move(dt,self.laser_sprites)
+        #print(f"the arms move in {pygame.time.get_ticks()-time2} ms")
+
+        # Check if game is over
+        if self.head.rect.colliderect(self.portal_rect) or self.player.rect.colliderect(self.portal_rect):
+            self.level += 1
+            self.restart()
 
     def load_new_level(self, level: int):
         self.level = level
         self.door_sprites.empty()
         self.buttons_in_game.empty()
         self.vent_sprites.empty()
-        self.map = create_map(self.path, level)
+        self.laser_sprites.empty()
+        self.tower_sprites.empty()
+        self.player.arms.empty()
+        self.arm_sprite.empty()
+        self.map = create_map(self.path, self.level)
         self.map_image = self.create_map_image()
         for infos in self.levels_infos['vent'][self.level - 1]:
             vent = Vent(self.path, infos[0], infos[1], infos[2],self.tile_size)
@@ -168,7 +177,7 @@ class Game():
         timing = pygame.time.get_ticks()
         self.window.blit(self.map_image, (0, 0))
         timing_2 = pygame.time.get_ticks()
-        print(f"blit map {timing_2-timing} ms")
+        #print(f"blit map {timing_2-timing} ms")
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
@@ -208,6 +217,7 @@ class Game():
         #self.player.state = 'without_head'
         #self.head.mask = pygame.mask.from_surface(self.head.image)
         self.head.mask = self.head.masks["idle"]
+        #self.window.blit(self.head.idle_mask,(self.head.rect.x, self.head.rect.y))
         self.window.blit(self.head.image, (self.head.rect.x, self.head.rect.y))
 
     def arm_aiming(self, initial_pos, actual_pos):
