@@ -45,6 +45,3 @@ class Arm(Moving_sprite):
             self.movement = 0, 0
             self.moving = False
             self.arm_finish.add(self)
-
-
-

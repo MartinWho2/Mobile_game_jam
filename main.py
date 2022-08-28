@@ -88,15 +88,35 @@ def main():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if game.action_button.rect.collidepoint(event.pos):
                         game.action_button.click(True)
+                    if game.action2_button.rect.collidepoint(event.pos):
+                        game.action2_button.click(True)
                     if game.reset_button.rect.collidepoint(event.pos):
                         game.restart()
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if game.action_button.clicking:
                         game.action_button.click(False)
-                        if game.arms_available > 0:
-                            if game.distance > game.action_button.rect.w/2:
-                                game.player.launch_arm(game.arms_direction)
-                                game.arms_available -= 1
+                        if game.player_or_head:
+                            if game.arms_available > 0:
+                                if game.distance > game.action_button.rect.w/2:
+                                    game.player.launch_arm(game.arms_direction)
+                                    game.arms_available -= 1
+                        else:
+                            for vent in game.vent_sprites:
+                                if game.head.rect.colliderect(vent.rect):
+                                    game.head.pos = pygame.Vector2(vent.dest[0], vent.dest[1])
+                    if game.action2_button.clicking:
+                        game.action2_button.click(False)
+                        if game.player_or_head:
+                            game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
+                                             game.collidable_sprites, [game.head_sprite])
+                            game.player.state = f"without_head_{game.arms_available}"
+                            game.player_or_head = not game.player_or_head
+
+                        else:
+                            if pygame.sprite.collide_mask(game.player, game.head):
+                                game.head.kill()  # Alternate between player and head
+                                game.player_or_head = not game.player_or_head
+
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
                         game.button_left.click(True)
@@ -203,6 +223,7 @@ def main():
                                     if level.rect.collidepoint(event.pos):
                                         in_game = True
                                         game.level = a
+                                        game.restart()
                                     level.click(False)
                                 a += 1
 

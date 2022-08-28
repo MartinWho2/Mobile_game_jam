@@ -7,6 +7,10 @@ from fonctions import create_map
 from player import Player
 from head import Head
 from level_infos import dictionnaire
+from vent import Vent
+from door import Door
+from button import Button
+from laser import Tower
 
 
 class Game():
@@ -43,13 +47,18 @@ class Game():
         action_surface = pygame.Surface((round(self.w / 8), round(self.w / 8)))
         pygame.draw.circle(action_surface, (150, 150, 150), (round(self.w / 16), round(self.w / 16)),
                            round(self.w / 16))
-        self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 6 / 7),
+        self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 5.5 / 7),
                                         round(self.w / 16), name="action")
+        action2_surface = pygame.Surface((round(self.w / 8), round(self.w / 8)))
+        pygame.draw.circle(action2_surface, (150, 150, 150), (round(self.w / 16), round(self.w / 16)),
+                           round(self.w / 16))
+        self.action2_button = Int_button(action2_surface, pygame.Vector2(self.w * 4 / 7, self.h * 5.5 / 7),
+                                        round(self.w / 16), name="action2")
         self.level = 1
         self.buttons_interface = pygame.sprite.Group(self.button_right, self.button_left, self.button_up,
-                                                     self.pause_button, self.reset_button, self.action_button)
+                                                     self.pause_button, self.reset_button, self.action_button, self.action2_button)
         self.buttons = {self.button_left: False, self.button_right: False, self.button_up: False,
-                        self.pause_button: False, self.action_button: False}
+                        self.pause_button: False, self.action_button: False, self.action2_button: False}
         self.map = create_map(self.path, self.level)
 
         self.tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/tile_test.png").convert_alpha(),
@@ -69,7 +78,10 @@ class Game():
         self.buttons_in_game = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
         self.glass_sprites = pygame.sprite.Group()
-        self.collidable_sprites = [self.door_sprites, self.glass_sprites,self.arm_sprite]
+        self.vent_sprites = pygame.sprite.Group()
+        self.tower_sprites = pygame.sprite.Group()
+        self.laser_sprites = pygame.sprite.Group()
+        self.collidable_sprites = [self.door_sprites, self.glass_sprites, self.arm_sprite, self.tower_sprites, self.laser_sprites]
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
@@ -136,6 +148,21 @@ class Game():
         self.buttons_in_game.empty()
         self.vent_sprites.empty()
         self.map = create_map(self.path, level)
+        self.map_image = self.create_map_image()
+        for infos in self.levels_infos['vent'][self.level - 1]:
+            vent = Vent(self.path, infos[0], infos[1], infos[2],self.tile_size)
+            vent2 = Vent(self.path, infos[1], infos[0], infos[2],self.tile_size)
+            self.vent_sprites.add(vent)
+            self.vent_sprites.add(vent2)
+        for infos in self.levels_infos['door'][self.level - 1]:
+            door = Door(self.path, infos[0], infos[1],self.tile_size, infos[2])
+            self.door_sprites.add(door)
+        for infos in self.levels_infos['button'][self.level - 1]:
+            button = Button(self.path, infos[0], infos[1],self.tile_size)
+            self.buttons_in_game.add(button)
+        for infos in self.levels_infos['laser'][self.level - 1]:
+            laser = Tower(self.path, infos[0], infos[1], self.tile_size,self.map)
+            self.laser_sprites.add(laser)
 
     def blit_map(self):
         timing = pygame.time.get_ticks()
@@ -146,7 +173,28 @@ class Game():
             for c_index, item in enumerate(row):
                 tile = item
                 if tile == "2":
-                    self.window.blit(self.glass_image, (column * self.tile_size, row * self.tile_size))
+                    self.window.blit(self.glass_image, (c_index * self.tile_size, r_index * self.tile_size))
+        timing = pygame.time.get_ticks()
+        print(f"blit glass {timing - timing_2}")
+        self.vent_sprites.draw(self.window)
+        timing_2 = pygame.time.get_ticks()
+        print(f"blit vent {timing_2 - timing} ms")
+        self.door_sprites.draw(self.window)
+        timing = pygame.time.get_ticks()
+        print(f"blit doors {timing - timing_2}")
+        self.laser_sprites.draw(self.window)
+
+    def create_map_image(self):
+        map_y, map_x = len(self.map), len(self.map[1])
+        map_image = pygame.surface.Surface((map_x * self.tile_size, map_y * self.tile_size))
+        for r_index, row in enumerate(self.map):
+            for c_index, item in enumerate(row):
+                tile = item
+                if tile != "1":
+                    map_image.blit(self.back_tile_image, (c_index * self.tile_size, r_index * self.tile_size))
+                if tile == "1":
+                    map_image.blit(self.tile_image, (c_index * self.tile_size, r_index * self.tile_size))
+        return map_image
 
     def blit_player(self, spritesheet, dt):
         self.player.image = spritesheet.animate(self.player.state, dt)
@@ -186,7 +234,9 @@ class Game():
 
     def restart(self):
         self.load_new_level(self.level)
-        self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
+        self.arms_available = 2
+        spawn = pygame.Vector2(dictionnaire["spawn"][self.level][0],dictionnaire["spawn"][self.level][1])
+        self.player = Player(spawn, self.map, self.tile_size, self.window, self.path,
                              self.collidable_sprites, [self.player_sprite], self.arm_sprite)
-
+        self.player_or_head = True
 
