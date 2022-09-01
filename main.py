@@ -50,7 +50,12 @@ def main():
         pygame.display.flip()
         window.fill((255, 255, 255))
         if in_game:
-            game.update(dt)
+            msg = game.update(dt)
+            if msg == 'end':
+                in_game = False
+                menu.state = 6
+                game.music.stop()
+                game.music.play(game.menu_music, -1)
             timing = pygame.time.get_ticks()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -66,6 +71,11 @@ def main():
                             print(f"Clicking on button {button.name} with finger {event.finger_id}")
                             button.click(True)
                             game.buttons[button] = finger_id
+                            if game.button_up.rect.collidepoint(x, y):
+                                if game.player_or_head:  # If player is moving
+                                    game.player.jump()
+                                else:  # If head is moving
+                                    game.head.jump()
 
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
@@ -84,11 +94,7 @@ def main():
                                 game.music.play(game.menu_music,-1)
                             if game.reset_button.rect.collidepoint(x, y):
                                 game.restart()
-                            if game.button_up.rect.collidepoint(x,y):
-                                if game.player_or_head:  # If player is moving
-                                    game.player.jump()
-                                else:  # If head is moving
-                                    game.head.jump()
+
                 elif event.type == pygame.FINGERMOTION:
                     pass
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -232,11 +238,15 @@ def main():
                     if menu.state == 3:
                         if menu.back_button.rect.collidepoint(event.pos):
                             menu.back_button.click(True)
+                        if menu.sound_icon_rect.collidepoint(event.pos):
+                            menu.sound_clicked = True
                     if menu.state == 4:
                         if menu.resume_button.rect.collidepoint(event.pos):
                             menu.resume_button.click(True)
                         if menu.menu_button.rect.collidepoint(event.pos):
                             menu.menu_button.click(True)
+                    if menu.state == 6:
+                        menu.state = 1
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     if menu.state == 1:
@@ -276,7 +286,14 @@ def main():
                             if menu.back_button.rect.collidepoint(event.pos):
                                 menu.state = 1
                             menu.back_button.click(False)
-
+                        if menu.sound_clicked:
+                            if menu.sound_icon_rect.collidepoint(event.pos):
+                                menu.sound_clicked = False
+                                menu.sound_state = not menu.sound_state
+                                if menu.sound_state:
+                                    game.music.set_volume(0.5)
+                                else:
+                                    game.music.set_volume(0)
                     if menu.state == 4:
                         if menu.resume_button.clicking:
                             if menu.resume_button.rect.collidepoint(event.pos):
@@ -288,6 +305,8 @@ def main():
                             if menu.menu_button.rect.collidepoint(event.pos):
                                 menu.state = 1
                             menu.menu_button.click(False)
+                    if menu.state == 5:
+                        menu.state = 1
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE and menu.state == 4:

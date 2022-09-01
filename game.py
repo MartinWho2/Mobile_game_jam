@@ -12,6 +12,7 @@ from door import Door
 from button import Button
 from laser import Tower
 from portal import Portal
+from text import Text
 
 
 class Game():
@@ -52,14 +53,10 @@ class Game():
         reset_image = pygame.transform.scale(pygame.image.load(path + 'media/reset.png').convert_alpha(), (100, 100))
         reset_button.blit(reset_image, (0, 0))
         self.reset_button = Int_button(reset_button, pygame.Vector2(self.w - 210, 5), 100, name="reset")
-        action_surface = pygame.Surface((round(self.w / 8), round(self.w / 8)))
-        pygame.draw.circle(action_surface, (150, 150, 150), (round(self.w / 16), round(self.w / 16)),
-                           round(self.w / 16))
+        action_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
         self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 5.5 / 7),
                                         round(self.w / 16), name="action")
-        action2_surface = pygame.Surface((round(self.w / 8), round(self.w / 8)))
-        pygame.draw.circle(action2_surface, (150, 150, 150), (round(self.w / 16), round(self.w / 16)),
-                           round(self.w / 16))
+        action2_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
         self.action2_button = Int_button(action2_surface, pygame.Vector2(self.w * 4 / 7, self.h * 5.5 / 7),
                                         round(self.w / 16), name="action2")
         self.level = 1
@@ -93,6 +90,7 @@ class Game():
         self.laser_sprites = pygame.sprite.Group()
         self.portal_sprites = pygame.sprite.Group()
         self.collidable_sprites = [self.door_sprites, self.glass_sprites, self.arm_sprite, self.tower_sprites]
+        self.texts = []
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
@@ -116,8 +114,11 @@ class Game():
         self.portal_rect = pygame.rect.Rect(0, 0, 10, 10)  # Modifié dans load level
 
     def update(self, dt):
+
         time = pygame.time.get_ticks()
         self.blit_map()
+        for text in self.texts:
+            self.window.blit(text.image, (text.rect.x+self.offset[0],text.rect.y+self.offset[1]))
         time2 = pygame.time.get_ticks()
         print(f"The map is blitted in {time2-time} ms")
         for button in self.buttons_interface:
@@ -151,7 +152,8 @@ class Game():
                     self.arm_aiming(self.action_button.rect.center, pos)
 
         time = pygame.time.get_ticks()
-        self.player.arms.draw(self.window)
+        for arm in self.player.arms:
+            self.window.blit(arm.image,(arm.rect.x+self.offset[0],arm.rect.y+self.offset[1]))
         time2 = pygame.time.get_ticks()
         print(f"The arms are blitted in {time2 - time} ms")
         for arm in self.player.arms:
@@ -176,6 +178,7 @@ class Game():
         if 31*self.tile_size < self.player.pos.x < 0 or 16*self.tile_size < self.player.pos.y < 0:
             self.restart()
     def load_new_level(self):
+        self.texts = []
         self.door_sprites.empty()
         self.opened_door_sprites.empty()
         self.portal_sprites.empty()
@@ -214,6 +217,10 @@ class Game():
             if portal.type == 'end':
                 self.portal_rect = portal.rect
             self.portal_sprites.add(portal)
+        for infos in self.levels_infos['texts'][self.level-1]:
+            text = Text(infos[0], infos[1], self.tile_size)
+            self.texts.append(text)
+
 
     def blit_map(self):
         timing = pygame.time.get_ticks()
@@ -292,7 +299,7 @@ class Game():
             if center.length() != 0:
                 center.scale_to_length(self.w / 16)
             rect1.center = initial_pos + center
-            rect2.center = self.player.rect.center + center
+            rect2.center = self.player.rect.center + center + self.offset
             self.window.blit(pointing_arrow, rect1)
             self.window.blit(pointing_arrow, rect2)
             self.arms_direction = center

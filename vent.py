@@ -2,7 +2,7 @@ import pygame
 
 
 class Vent(pygame.sprite.Sprite):
-    def __init__(self, path, coo, dest, group,tile_size, turned=False):
+    def __init__(self, path, coo, dest, group, tile_size, turned=False):
         super().__init__()
         self.tile_size = tile_size
         self.image = pygame.image.load(path + 'media/vent.png').convert_alpha()

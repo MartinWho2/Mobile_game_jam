@@ -4,10 +4,15 @@ from interface_button import Interface_button
 
 class Menu:
     def __init__(self, window, path:str):
-        self.state = 1
+        self.state = 5
         self.window = window
         self.font = pygame.font.SysFont('arial', 50)
         self.levels_buttons = []
+
+        self.open_screen = pygame.transform.scale(pygame.image.load(path+'media/open_screen.png'), (self.window.get_width(), self.window.get_height()))
+        self.open_screen_rect = self.open_screen.get_rect()
+        self.win_image = pygame.image.load(path + 'media/win_image.png')
+        self.win_image_rect = self.win_image.get_rect()
 
         self.play_button = pygame.transform.scale(pygame.image.load(path+'media/button.png').convert_alpha(), (400, 100))
         self.play_button_rect = self.play_button.get_rect()
@@ -70,6 +75,17 @@ class Menu:
 
         self.title_screen = pygame.transform.scale(pygame.image.load(path+"media/title_screen.png").convert(),self.window.get_size())
 
+        self.sound_text = self.font.render('Music:', True, (150, 150, 150))
+        self.sound_text_rect = self.sound_text.get_rect()
+        self.sound_text_rect.center = self.window.get_width()/3, self.window.get_height()/2
+        self.sound_on_icon = pygame.image.load(path +'media/sound_on.png')
+        self.sound_off_icon = pygame.image.load(path +'media/sound_off.png')
+        self.sound_icon_rect = self.sound_on_icon.get_rect()
+        self.sound_icon_rect.center = self.sound_text_rect.right+60, self.window.get_height()/2
+
+        self.sound_clicked = False
+        self.sound_state = True
+
     def update(self):
         if self.state == 1:
             self.window.blit(self.title_screen,(0,0))
@@ -82,8 +98,17 @@ class Menu:
 
             self.window.blit(self.back_button.image, self.back_button.rect)
         elif self.state == 3:
+            self.window.blit(self.sound_text, self.sound_text_rect)
+            if self.sound_state:
+                self.window.blit(self.sound_on_icon, self.sound_icon_rect)
+            else:
+                self.window.blit(self.sound_off_icon, self.sound_icon_rect)
             self.window.blit(self.back_button.image, self.back_button.rect)
         elif self.state == 4:
             self.window.blit(self.resume_button.image, self.resume_button.rect)
             self.window.blit(self.menu_button.image, self.menu_button.rect)
+        elif self.state == 5:
+            self.window.blit(self.open_screen, self.open_screen_rect)
+        elif self.state == 6:
+            self.window.blit(self.win_image, self.win_image_rect)
 
