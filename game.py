@@ -17,9 +17,16 @@ from portal import Portal
 class Game():
     def __init__(self, window: pygame.surface.Surface, path: str):
         self.window = window
+        self.menu_music = pygame.mixer.Sound(path+"media/menu_music.wav")
+        self.level_music = pygame.mixer.Sound(path+"media/level_music.wav")
+        self.music = pygame.mixer.Channel(1)
+        self.music.set_volume(0.5)
+        self.music.play(self.menu_music,-1)
         self.path = path
         self.tile_size = 40
         self.w, self.h = self.window.get_size()
+        print(self.w,self.h)
+        self.offset = ((self.w-30*self.tile_size)/2,50)
         arrow_right = pygame.image.load(path + "media/arrow.png").convert_alpha()
         arrow_up = pygame.image.load(path + "media/arrow_up.png")
         button = pygame.surface.Surface(arrow_right.get_size())
@@ -74,6 +81,7 @@ class Game():
         # Sprites
         self.player_sprite = pygame.sprite.Group()
         self.laser_sprites = pygame.sprite.Group()
+        self.opened_laser_sprites = pygame.sprite.Group()
         self.head_sprite = pygame.sprite.Group()
         self.arm_sprite = pygame.sprite.Group()
         self.buttons_in_game = pygame.sprite.Group()
@@ -88,7 +96,7 @@ class Game():
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
-                             self.collidable_sprites, [self.player_sprite], self.arm_sprite)
+                             self.collidable_sprites, [self.player_sprite], self.arm_sprite, )
         self.head = Head(pygame.Vector2(0, 0), self.map, self.tile_size, self.window, self.path,
                          self.collidable_sprites, [self.head_sprite])
         self.player_or_head = True  # Player is True, head is False
@@ -111,24 +119,29 @@ class Game():
         time = pygame.time.get_ticks()
         self.blit_map()
         time2 = pygame.time.get_ticks()
-        #print(f"The map is blitted in {time2-time} ms")
+        print(f"The map is blitted in {time2-time} ms")
         for button in self.buttons_interface:
-            self.window.blit(button.image, button.rect)
+            self.window.blit(button.image, (button.rect.x, button.rect.y))
         time = pygame.time.get_ticks()
-        #print(f"The buttons are blitted in {time - time2} ms")
+        print(f"The buttons are blitted in {time - time2} ms")
         if self.player_or_head:
             self.player.move(self, dt)
             time2 = pygame.time.get_ticks()
-            #print(f"The player movements are done in {time2 - time} ms")
+            print(f"The player movements are done in {time2 - time} ms")
         else:
             self.player.fall(dt)
+            time2 = pygame.time.get_ticks()
+            print(f"The player falling is done in {time2 - time} ms")
             self.head.move(self, dt)
-
+            time = pygame.time.get_ticks()
+            print(f"The head moves in {time - time2} ms")
             self.blit_head(self.head_spritesheet, dt)
+            time2 = pygame.time.get_ticks()
+            print(f"The head moves in {time2 - time} ms")
 
         self.blit_player(self.player_spritesheet, dt)
         time = pygame.time.get_ticks()
-        #print(f"The player is blitted in {time - time2} ms")
+        print(f"The player is blitted in {time - time2} ms")
         # Action button
         if self.action_button.clicking:
             if self.player_or_head:
@@ -140,17 +153,28 @@ class Game():
         time = pygame.time.get_ticks()
         self.player.arms.draw(self.window)
         time2 = pygame.time.get_ticks()
-        #print(f"The arms are blitted in {time2 - time} ms")
+        print(f"The arms are blitted in {time2 - time} ms")
         for arm in self.player.arms:
             if arm.moving:
                 arm.move(dt,self.laser_sprites)
-        #print(f"the arms move in {pygame.time.get_ticks()-time2} ms")
+        print(f"the arms move in {pygame.time.get_ticks()-time2} ms")
 
         # Check if game is over
         if self.head.rect.colliderect(self.portal_rect) or self.player.rect.colliderect(self.portal_rect):
             self.level += 1
+            if self.level <= 8:
+                self.restart()
+            else:
+                return 'end'
+
+        if not self.player_or_head:
+            if self.head.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
+                self.restart()
+        if self.player.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
             self.restart()
 
+        if 31*self.tile_size < self.player.pos.x < 0 or 16*self.tile_size < self.player.pos.y < 0:
+            self.restart()
     def load_new_level(self):
         self.door_sprites.empty()
         self.opened_door_sprites.empty()
@@ -158,6 +182,7 @@ class Game():
         self.buttons_in_game.empty()
         self.vent_sprites.empty()
         self.laser_sprites.empty()
+        self.opened_laser_sprites.empty()
         self.tower_sprites.empty()
         self.player.arms.empty()
         self.arm_sprite.empty()
@@ -178,9 +203,12 @@ class Game():
             button = Button(self.path, infos[0], infos[1], self.tile_size)
             self.buttons_in_game.add(button)
         for infos in self.levels_infos['laser'][self.level - 1]:
-            laser = Tower(self.path, infos[0], infos[1],infos[2], self.tile_size,self.map)
+            laser = Tower(self.path, infos[0], infos[1],infos[2], infos[3], self.tile_size,self.map)
             self.tower_sprites.add(laser)
-            self.laser_sprites.add(laser.laser)
+            if laser.laser.opened:
+                self.opened_laser_sprites.add(laser.laser)
+            else:
+                self.laser_sprites.add(laser.laser)
         for infos in self.levels_infos['portal'][self.level - 1]:
             portal = Portal(self.path, infos, self.tile_size)
             if portal.type == 'end':
@@ -189,30 +217,35 @@ class Game():
 
     def blit_map(self):
         timing = pygame.time.get_ticks()
-        self.window.blit(self.map_image, (0, 0))
+        self.window.blit(self.map_image, (self.offset[0], self.offset[1]))
         timing_2 = pygame.time.get_ticks()
         #print(f"blit map {timing_2-timing} ms")
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
                 if tile == "2":
-                    self.window.blit(self.glass_image, (c_index * self.tile_size, r_index * self.tile_size))
+                    self.window.blit(self.glass_image, (c_index * self.tile_size+self.offset[0], r_index * self.tile_size+self.offset[1]))
         timing = pygame.time.get_ticks()
         #print(f"blit glass {timing - timing_2}")
-        self.vent_sprites.draw(self.window)
+        for vent in self.vent_sprites:
+            self.window.blit(vent.image,(vent.rect.x+self.offset[0],vent.rect.y+self.offset[1]))
         timing_2 = pygame.time.get_ticks()
         for button in self.buttons_in_game:
             if button.on == True:
-                self.window.blit(button.image_on, button.rect)
+                self.window.blit(button.image_on, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
             else:
-                self.window.blit(button.image_off, button.rect)
+                self.window.blit(button.image_off, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
         #print(f"blit vent {timing_2 - timing} ms")
-        self.door_sprites.draw(self.window)
+        for door in self.door_sprites:
+            self.window.blit(door.image,(door.rect.x+self.offset[0],door.rect.y+self.offset[1]))
         timing = pygame.time.get_ticks()
         #print(f"blit doors {timing - timing_2}")
-        self.laser_sprites.draw(self.window)
-        self.tower_sprites.draw(self.window)
-        self.portal_sprites.draw(self.window)
+        for laser in self.laser_sprites:
+            self.window.blit(laser.image,(laser.rect.x+self.offset[0],laser.rect.y+self.offset[1]))
+        for tower in self.tower_sprites:
+            self.window.blit(tower.image,(tower.rect.x+self.offset[0],tower.rect.y+self.offset[1]))
+        for portal in self.portal_sprites:
+            self.window.blit(portal.image, (portal.rect.x+self.offset[0],portal.rect.y+self.offset[1]))
 
     def create_map_image(self):
         map_y, map_x = len(self.map), len(self.map[1])
@@ -221,7 +254,8 @@ class Game():
             for c_index, item in enumerate(row):
                 tile = item
                 if tile != "1":
-                    map_image.blit(self.back_tile_image, (c_index * self.tile_size, r_index * self.tile_size))
+                    pygame.draw.rect(map_image,(255,255,255),pygame.rect.Rect(c_index * self.tile_size, r_index * self.tile_size,self.tile_size,self.tile_size))
+                    #map_image.blit(self.back_tile_image, (c_index * self.tile_size, r_index * self.tile_size))
                 if tile == "1":
                     map_image.blit(self.tile_image, (c_index * self.tile_size, r_index * self.tile_size))
         return map_image
@@ -229,9 +263,8 @@ class Game():
     def blit_player(self, spritesheet, dt):
         self.player.image = spritesheet.animate(self.player.state, dt)
         # self.player.mask = pygame.mask.from_surface(self.player.image)
-        self.player.mask = self.player.masks["idle"]
-        # self.window.blit(self.player.idle_mask,self.player.rect)
-        self.window.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
+        #self.window.blit(self.player.idle_mask,self.player.rect)
+        self.window.blit(self.player.image, (self.player.rect.x+self.offset[0], self.player.rect.y+self.offset[1]))
 
     def blit_head(self, spritesheet, dt):
         self.head.image = spritesheet.animate(self.head.state, dt)
@@ -239,7 +272,8 @@ class Game():
         #self.head.mask = pygame.mask.from_surface(self.head.image)
         self.head.mask = self.head.masks["idle"]
         #self.window.blit(self.head.idle_mask,(self.head.rect.x, self.head.rect.y))
-        self.window.blit(self.head.image, (self.head.rect.x, self.head.rect.y))
+        #pygame.draw.rect(self.window,(0,0,0),self.head.rect_collision)
+        self.window.blit(self.head.image, (self.head.rect.x+self.offset[0], self.head.rect.y+self.offset[1]))
 
     def arm_aiming(self, initial_pos, actual_pos):
         if self.arms_available > 0:

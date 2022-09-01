@@ -15,8 +15,9 @@ class Head(Moving_sprite):
         self.idle_mask = pygame.image.load(self.path + "media/head/idle_mask.png").convert_alpha()
         idle_mask = pygame.mask.from_surface(self.idle_mask)
         self.masks = {"idle": idle_mask}
-
+        self.idle_idle_mask = idle_mask
         self.animate_detachment()
+        self.rect_collision = self.mask.get_rect(midbottom=(self.rect.right,self.rect.bottom+self.rect.h))
 
     def animate_detachment(self):
         self.speed = pygame.Vector2(-self.w / 200, self.w / 200)
@@ -34,10 +35,10 @@ class Head(Moving_sprite):
         hits = self.check_collision()
         if hits:
             self.collide(hits, False)  # Horizontal hits
-
         self.fall(dt)  # Vertical hits, see moving_sprite.py
         self.rect.y = round(self.pos.y)
 
+        self.rect_collision.midbottom = (self.rect.right,self.rect.bottom+self.rect.h)
         # Update state
         if self.is_jumping:
             self.state = 'jump'
@@ -47,9 +48,8 @@ class Head(Moving_sprite):
             self.state = 'run_right'
         else:
             self.state = 'idle'
-
     def jump(self):
         if not self.is_jumping:
             self.state = 'jump'
             self.is_jumping = True
-            self.speed.y = -5.5
+            self.speed.y = -6

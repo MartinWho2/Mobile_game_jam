@@ -1,7 +1,7 @@
 import pygame
 import math
 from moving_sprite import Moving_sprite
-
+from laser import Laser
 
 class Arm(Moving_sprite):
     def __init__(self, window, default_spawn: pygame.Vector2, movement: pygame.Vector2, tiles: list, tile_factor:int, groups_colliding, groups_including, player_size: int, path: str, arm_finish: pygame.sprite.Group):
@@ -39,14 +39,52 @@ class Arm(Moving_sprite):
             self.movement = 0, 0
             self.moving = False
             self.arm_finish.add(self)
-            laser = self.check_collision(tiles=False,sprite_groups=[lasers],return_sprite=True)
-            if laser:
-                arm_tile = (math.floor(self.rect.centerx/self.tile_size),math.floor(self.rect.centery/self.tile_size))
-                if laser.direction == "up":
-                    pass
+            self.laser_collide(lasers)
+            return
         hits = self.check_collision(breaking=True)
         self.collide(hits, True)
         if hits:
             self.movement = 0, 0
             self.moving = False
             self.arm_finish.add(self)
+            self.laser_collide(lasers)
+
+    def laser_collide(self,lasers):
+        laser = self.check_collision(tiles=False, sprite_groups=[lasers], return_sprite=True)
+        if laser:
+            laser: Laser
+            arm_tile = (math.floor(self.rect.centerx / self.tile_size), math.floor(self.rect.centery / self.tile_size))
+            print(arm_tile,laser.tiles)
+            if laser.direction in {"up", "down"}:
+                if laser.tiles[0] < arm_tile[1] < laser.tiles[1]:
+                    if laser.direction == "up" and arm_tile[1]+1 != laser.tiles[1]:
+                        laser.tiles = [arm_tile[1]+1,laser.tiles[1]]
+                    elif laser.direction == "down" and laser.tiles[0] != arm_tile[1]-1:
+                        laser.tiles = [laser.tiles[0],arm_tile[1]-1]
+                    else:
+                        laser.opened = True
+                        return
+                    laser_range = laser.tiles[1]-laser.tiles[0]
+                    laser.image = pygame.transform.scale(laser.image,(laser.rect.w,laser_range*self.tile_size))
+                    laser.mask = pygame.mask.from_surface(laser.image)
+                    if laser.direction == "up":
+                        laser.rect = laser.image.get_rect(bottomleft=laser.rect.bottomleft)
+                    else:
+                        laser.rect = laser.image.get_rect(topleft=laser.rect.topleft)
+
+            else:
+                if laser.tiles[0] < arm_tile[0] < laser.tiles[1]:
+                    if laser.direction == "left" and arm_tile[0]+1 != laser.tiles[1]:
+                        laser.tiles = [arm_tile[0] + 1, laser.tiles[1]]
+                    elif laser.direction == "right" and arm_tile[1]-1 != laser.tiles[0]:
+                        laser.tiles = [laser.tiles[0], arm_tile[1] - 1]
+                    else:
+                        laser.opened = True
+                        return
+                    laser_range = laser.tiles[1] - laser.tiles[0]
+                    laser.image = pygame.transform.scale(laser.image, (laser_range * self.tile_size, laser.rect.h))
+                    laser.mask = pygame.mask.from_surface(laser.image)
+                    if laser.direction == "left":
+                        laser.rect = laser.image.get_rect(topright=laser.rect.topright)
+                    else:
+                        laser.rect = laser.image.get_rect(topleft=laser.rect.topleft)

@@ -128,6 +128,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                         if not found:
                             found = row
                         continue_finding = True
+                        break
                 if found and not continue_finding:
                     return row - found
             return size[1] - found

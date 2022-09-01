@@ -8,6 +8,7 @@ from head import Head
 
 pygame.init()
 window = pygame.display.set_mode((1280, 720))
+
 clock = pygame.time.Clock()
 fps = 60
 
@@ -35,7 +36,8 @@ def main():
     menu = Menu(window, path)
     before = time.time()
     time.sleep(0.1)
-
+    icon = pygame.image.load(path+"media/icon.png")
+    pygame.display.set_icon(icon)
 
 
     while running:
@@ -78,6 +80,8 @@ def main():
                             if game.pause_button.rect.collidepoint(x, y):
                                 in_game = False
                                 menu.state = 4
+                                game.music.stop()
+                                game.music.play(game.menu_music,-1)
                             if game.reset_button.rect.collidepoint(x, y):
                                 game.restart()
                             if game.button_up.rect.collidepoint(x,y):
@@ -104,7 +108,7 @@ def main():
                                     game.arms_available -= 1
                         else:
                             for button in game.buttons_in_game:
-                                if game.head.rect.colliderect(button):
+                                if game.head.rect_collision.colliderect(button):
                                     button.on = not button.on
                                     for num in button.num:
                                         for door in game.door_sprites:
@@ -122,10 +126,22 @@ def main():
                                             for laser in game.laser_sprites:
                                                 if num == laser.num:
                                                     laser.opened = not laser.opened
+                                                    game.opened_laser_sprites.add(laser)
+                                                    game.laser_sprites.remove(laser)
+                                                    break
+                                            else:
+                                                for laser in game.opened_laser_sprites:
+                                                    if num == laser.num:
+                                                        laser.opened = not laser.opened
+                                                        game.laser_sprites.add(laser)
+                                                        game.opened_laser_sprites.remove(laser)
 
                             for vent in game.vent_sprites:
-                                if game.head.rect.colliderect(vent.rect):
-                                    game.head.pos = pygame.Vector2(vent.dest[0], vent.dest[1])
+                                if game.head.rect_collision.colliderect(vent.rect):
+                                    game.head.pos = pygame.Vector2(vent.dest[0]-10, vent.dest[1]-12)
+                                    game.head.rect.x,game.head.rect.y = round(game.head.pos.x),round(game.head.pos.y)
+                                    game.head.fall(dt)
+                                    break
                     if game.action2_button.clicking:
                         game.action2_button.click(False)
                         if game.player_or_head:
@@ -184,6 +200,8 @@ def main():
                         game.pause_button.click(False)
                         in_game = False
                         menu.state = 4
+                        game.music.stop()
+                        game.music.play(game.menu_music,-1)
             #print(f"the events are handled in {pygame.time.get_ticks()-timing} ms")
 
         else:
@@ -246,6 +264,8 @@ def main():
                                 if level.clicking:
                                     if level.rect.collidepoint(event.pos):
                                         in_game = True
+                                        game.music.stop()
+                                        game.music.play(game.level_music,-1)
                                         game.level = a
                                         game.restart()
                                     level.click(False)
@@ -261,6 +281,8 @@ def main():
                         if menu.resume_button.clicking:
                             if menu.resume_button.rect.collidepoint(event.pos):
                                 in_game = True
+                                game.music.stop()
+                                game.music.play(game.level_music, -1)
                             menu.resume_button.click(False)
                         if menu.menu_button.clicking:
                             if menu.menu_button.rect.collidepoint(event.pos):
@@ -270,6 +292,8 @@ def main():
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE and menu.state == 4:
                         in_game = True
+                        game.music.stop()
+                        game.music.play(game.level_music, -1)
 
 
 if __name__ == "__main__":

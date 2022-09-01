@@ -23,8 +23,10 @@ class Player(Moving_sprite):
         self.arms_finish = arm_sprite
         self.arms = pygame.sprite.Group()
         self.idle_mask = pygame.image.load(self.path+"media/player/idle_mask.png").convert_alpha()
-        idle_mask = pygame.mask.from_surface(self.idle_mask)
-        self.masks = {"idle": idle_mask}
+        self.idle_mask_mask = pygame.mask.from_surface(self.idle_mask)
+        idle_mask = self.idle_mask_mask
+        #self.debug_print_mask([self.idle_mask_mask])
+        self.mask = idle_mask
 
     def move(self, game, dt):
         # Key input
@@ -38,7 +40,13 @@ class Player(Moving_sprite):
         hits = self.check_collision()
         if hits:
             movement = self.collide(hits, False)
+        #if self.check_collision():
+            #print("collision again")
+            #print(self.mask==self.idle_mask_mask)
+            #print(self.debug_print_mask(self.check_collision()))
+            #print("class is ",self.check_collision(tiles=False,return_sprite=True).__class__)
         self.fall(dt)
+
 
         # Update state
         if self.is_jumping:
@@ -68,3 +76,12 @@ class Player(Moving_sprite):
 
         if self.rect.x > self.w:
             self.rect.x = -self.rect.w
+
+    def debug_print_mask(self,masks:list[pygame.mask.Mask]):
+        for mask in masks:
+            size = mask.get_size()
+            for y in range(size[1]):
+                for x in range(size[0]):
+                    print(mask.get_at((x,y)),end="")
+                print("")
+            print("END MASK\n\n")
