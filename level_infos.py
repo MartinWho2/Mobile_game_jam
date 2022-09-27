@@ -15,7 +15,7 @@ dictionnaire = {
         [],
         [],
         [[(6, 9), (27, 7), 0]],
-        [[(5, 3), (1, 5), 0], [(8, 6), (1, 14), 2], [(11, 6), (27, 3), 3],[(1, 10), (14, 14), 4]],
+        [[(5, 3), (1, 5), 0], [(8, 6), (1, 14), 2],[(1, 10), (14, 14), 3]],
         [[(28, 2), (3, 7), 0], [(7, 7), (28, 13), 1]],
         [[(4, 3), (1, 13), 0], [(14, 13), (6, 7), 1], [(21, 8), (28, 13), 2]],
         [[(9, 6), (11, 6), 0], [(18, 6), (11, 13), 1]],
@@ -53,7 +53,7 @@ dictionnaire = {
     ],
     'texts': [
         [[(15, 2), 'Use the left and right arrows to move'], [(15, 10), 'Use the up arrow to jump']],
-        [[(20, 3), 'Use the right action button'], [(20, 5), 'to throw your arms'], [(21, 12.5), 'Use the left action button to detach your head']],
+        [[(20, 3), 'Pull the right action button'], [(20, 5), 'to throw your arms'], [(21, 12.5), 'Use the left action button to detach/reattach your head']],
         [[(10, 3), 'Use the vents to move to another location'], [(19, 8), 'Use the button to deactivate the laser']],
         [],
         [],
