@@ -41,18 +41,20 @@ class Moving_sprite(pygame.sprite.Sprite):
         # Collision with tiles
         if tiles:
             # Checks for collisions with tiles near the sprite
+            a = pygame.time.get_ticks()
             for r_index, row in enumerate(self.tiles):
                 for c_index, item in enumerate(row):
                     tile = item
-                    if tile != "0":
+                    if tile != 0:
                         mask = self.collide_with_mask(self.tile, (c_index * self.tile_size, r_index * self.tile_size))
                         if mask.count():
-                            if item == "2" and breaking:
-                                self.tiles[r_index][c_index] = "0"
+                            if item == 2 and breaking:
+                                self.tiles[r_index][c_index] = 0
                                 self.breaking_glass(r_index, c_index)
                             else:
                                 get_hits.append(mask)
-
+            print(f"Collision with : map player {pygame.time.get_ticks()-a}")
+        a = pygame.time.get_ticks()
         # Collision with elements
         for group in sprite_groups:
             for element in group:
@@ -61,7 +63,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                     if return_sprite:
                         return element
                     get_hits.append(mask)
-
+        print(f"Collision with sprites : player {pygame.time.get_ticks()-a}")
         return get_hits
 
     def collide(self, hits: list, axis: bool) -> int:
@@ -141,15 +143,15 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.collide(hits, True)
 
     def breaking_glass(self, row, column):
-        if self.tiles[row + 1][column] == "2":
-            self.tiles[row + 1][column] = "0"
+        if self.tiles[row + 1][column] == 2:
+            self.tiles[row + 1][column] = 0
             self.breaking_glass(row + 1, column)
-        if self.tiles[row][column + 1] == "2":
-            self.tiles[row][column + 1] = "0"
+        if self.tiles[row][column + 1] == 2:
+            self.tiles[row][column + 1] = 0
             self.breaking_glass(row, column + 1)
-        if self.tiles[row - 1][column] == "2":
-            self.tiles[row - 1][column] = "0"
+        if self.tiles[row - 1][column] == 2:
+            self.tiles[row - 1][column] = 0
             self.breaking_glass(row - 1, column)
-        if self.tiles[row][column - 1] == "2":
-            self.tiles[row][column - 1] = "0"
+        if self.tiles[row][column - 1] == 2:
+            self.tiles[row][column - 1] = 0
             self.breaking_glass(row, column - 1)

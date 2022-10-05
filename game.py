@@ -114,7 +114,7 @@ class Game():
         self.portal_rect = pygame.rect.Rect(0, 0, 10, 10)  # Modifié dans load level
 
     def update(self, dt):
-
+        print(f"dt = {dt}")
         time = pygame.time.get_ticks()
         self.blit_map()
         for text in self.texts:
@@ -230,7 +230,7 @@ class Game():
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
-                if tile == "2":
+                if tile == 2:
                     self.window.blit(self.glass_image, (c_index * self.tile_size+self.offset[0], r_index * self.tile_size+self.offset[1]))
         timing = pygame.time.get_ticks()
         #print(f"blit glass {timing - timing_2}")
@@ -260,10 +260,10 @@ class Game():
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
-                if tile != "1":
+                if tile != 1:
                     pygame.draw.rect(map_image,(255,255,255),pygame.rect.Rect(c_index * self.tile_size, r_index * self.tile_size,self.tile_size,self.tile_size))
                     #map_image.blit(self.back_tile_image, (c_index * self.tile_size, r_index * self.tile_size))
-                if tile == "1":
+                if tile == 1:
                     map_image.blit(self.tile_image, (c_index * self.tile_size, r_index * self.tile_size))
         return map_image
 

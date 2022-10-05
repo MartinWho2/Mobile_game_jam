@@ -47,7 +47,6 @@ class Player(Moving_sprite):
             #print("class is ",self.check_collision(tiles=False,return_sprite=True).__class__)
         self.fall(dt)
 
-
         # Update state
         if self.is_jumping:
             self.state = 'jump'

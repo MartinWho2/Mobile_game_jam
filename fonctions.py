@@ -30,7 +30,7 @@ def create_map(path: str, level: int) -> list:
         temporary_list = []
         for char in text:
             if char != "\n":
-                temporary_list.append(char)
+                temporary_list.append(int(char))
             else:
                 carte.append(temporary_list)
                 temporary_list = []

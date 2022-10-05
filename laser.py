@@ -33,7 +33,7 @@ class Tower(pygame.sprite.Sprite):
                 tile = self.map[pos[1]][pos[0]-i]
             elif direction == "right":
                 tile = self.map[pos[1]][pos[0]+i]
-            if tile != "0":
+            if tile != 0:
                 break
             self.laser_range += 1
         if direction == "up":

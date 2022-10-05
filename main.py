@@ -10,7 +10,7 @@ pygame.init()
 window = pygame.display.set_mode((1280, 720))
 
 clock = pygame.time.Clock()
-fps = 60
+fps = 80
 
 
 def platform():
@@ -20,7 +20,7 @@ def platform():
         return "win"
 
 def display_fps(dt):
-    fps_text = pygame.font.SysFont("arial",30).render(str(round(60 / dt, 3)), False, (0, 0, 0))
+    fps_text = pygame.font.SysFont("arial",30).render(str(dt), False, (0, 0, 0))
     window.blit(fps_text, (0, 0))
 
 
@@ -46,7 +46,7 @@ def main():
         before = time.time()
         if dt > 5:
             dt = 5.0
-        display_fps(dt)
+        display_fps(clock.get_fps())
         pygame.display.flip()
         window.fill((255, 255, 255))
         if in_game:
