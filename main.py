@@ -61,9 +61,12 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     running = False
-                elif event.type == pygame.FINGERMOTION and event.finger_id == game.buttons[game.action_button]:
-                    game.finger_on_aim[1] = game.finger_on_aim[1] + event.dx * window.get_width()
-                    game.finger_on_aim[2] = game.finger_on_aim[2] + event.dy * window.get_height()
+                elif event.type == pygame.FINGERMOTION:
+                    print(f"fingers - compare {event.finger_id}, {game.buttons[game.action_button]}")
+                    if event.finger_id == game.buttons[game.action_button]:
+                        print(f"moving of x: {event.dx * window.get_width()}, y: {event.dy * window.get_height()}")
+                        game.finger_on_aim[1] = game.finger_on_aim[1] + event.dx * window.get_width()
+                        game.finger_on_aim[2] = game.finger_on_aim[2] + event.dy * window.get_height()
                 elif event.type == pygame.FINGERDOWN:
                     print(f"finger-down : {event.finger_id + 1}")
                     finger_id = event.finger_id + 1
@@ -72,7 +75,7 @@ def main():
                         if button.rect.collidepoint(x, y):
                             print(f"Clicking on button {button.name} with finger {event.finger_id}")
                             button.click(True)
-                            game.buttons[button] = finger_id
+                            game.buttons[button] = event.finger_id
                             if button == game.button_up:
                                 if game.player_or_head:  # If player is moving
                                     game.player.jump()
