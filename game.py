@@ -1,4 +1,5 @@
 import pygame
+from pygame._sdl2 import touch
 import math
 
 from spritesheet import Spritesheet
@@ -26,6 +27,7 @@ class Game():
         self.path = path
         self.tile_size = 40
         self.w, self.h = self.window.get_size()
+        self.finger_on_aim = None
         print(self.w,self.h)
         self.offset = ((self.w-30*self.tile_size)/2,50)
         arrow_right = pygame.image.load(path + "media/arrow.png").convert_alpha()
@@ -54,14 +56,14 @@ class Game():
         reset_button.blit(reset_image, (0, 0))
         self.reset_button = Int_button(reset_button, pygame.Vector2(self.w - 210, 5), 100, name="reset")
         head_image = pygame.image.load(self.path + 'media/head/head_button.png').convert_alpha()
-        head_image = pygame.transform.scale(head_image,(head_image.get_width()*2,head_image.get_height()*2))
+        head_image = pygame.transform.smoothscale(head_image,(head_image.get_width()*2,head_image.get_height()*2))
         action_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
         arm_image = pygame.image.load(self.path + 'media/arm.png').convert_alpha()
-        arm_image = pygame.transform.scale(arm_image,(round(arm_image.get_width()*1.5),
+        arm_image = pygame.transform.smoothscale(arm_image,(round(arm_image.get_width()*1.5),
                                                       round(arm_image.get_height()*1.5)))
         arm_image = pygame.transform.rotate(arm_image,90)
         head_button_image = pygame.image.load(self.path + 'media/action_button_head.png').convert_alpha()
-        head_button_image = pygame.transform.scale(head_button_image,(head_button_image.get_width()*2,head_button_image.get_height()*2))
+        head_button_image = pygame.transform.smoothscale(head_button_image,(head_button_image.get_width()*1.7,head_button_image.get_height()*1.7))
         action3_surface = action_surface.copy()
         action3_surface.blit(head_button_image,(round(action3_surface.get_width()/2-head_button_image.get_width()/2),
                                                 round(action3_surface.get_height()/2-head_button_image.get_height()/2)))
@@ -162,6 +164,10 @@ class Game():
         if self.action_button.clicking:
             if self.player_or_head:
                 pos = pygame.mouse.get_pos()
+                if self.finger_on_aim is None:
+                    device = touch.get_device(0)
+                    data = touch.get_finger(device,self.finger_on_aim)
+                    pos = (data["x"],data["y"])
                 self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
                 if self.distance > self.action_button.rect.w / 2:
                     self.arm_aiming(self.action_button.rect.center, pos)

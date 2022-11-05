@@ -71,11 +71,13 @@ def main():
                             print(f"Clicking on button {button.name} with finger {event.finger_id}")
                             button.click(True)
                             game.buttons[button] = finger_id
-                            if game.button_up.rect.collidepoint(x, y):
+                            if button == game.button_up:
                                 if game.player_or_head:  # If player is moving
                                     game.player.jump()
                                 else:  # If head is moving
                                     game.head.jump()
+                            elif button == game.action_button:
+                                game.finger_on_aim = event.finger_id
 
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
