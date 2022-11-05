@@ -61,7 +61,9 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     running = False
-
+                elif event.type == pygame.FINGERMOTION and event.finger_id == game.buttons[game.action_button]:
+                    game.finger_on_aim[1] = game.finger_on_aim[1] + event.dx * window.get_width()
+                    game.finger_on_aim[2] = game.finger_on_aim[2] + event.dy * window.get_height()
                 elif event.type == pygame.FINGERDOWN:
                     print(f"finger-down : {event.finger_id + 1}")
                     finger_id = event.finger_id + 1
@@ -77,7 +79,7 @@ def main():
                                 else:  # If head is moving
                                     game.head.jump()
                             elif button == game.action_button:
-                                game.finger_on_aim = event.finger_id
+                                game.finger_on_aim = [True,x,y]
 
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
@@ -86,6 +88,8 @@ def main():
                     for value in game.buttons.items():
                         if value[1] == finger_id:
                             print(f"Releasing touch on button {value[0].name}")
+                            if value[0] == game.action_button:
+                                game.finger_on_aim[0] = False
                             game.buttons[value[0]] = False
                             value[0].click(False)
 

@@ -27,7 +27,7 @@ class Game():
         self.path = path
         self.tile_size = 40
         self.w, self.h = self.window.get_size()
-        self.finger_on_aim = None
+        self.finger_on_aim = [False,0,0]
         print(self.w,self.h)
         self.offset = ((self.w-30*self.tile_size)/2,50)
         arrow_right = pygame.image.load(path + "media/arrow.png").convert_alpha()
@@ -164,10 +164,8 @@ class Game():
         if self.action_button.clicking:
             if self.player_or_head:
                 pos = pygame.mouse.get_pos()
-                if self.finger_on_aim is not None:
-                    device = touch.get_device(0)
-                    data = touch.get_finger(device,self.finger_on_aim)
-                    pos = (data["x"],data["y"])
+                if self.finger_on_aim[0]:
+                    pos = self.finger_on_aim[1:]
                 self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
                 if self.distance > self.action_button.rect.w / 2:
                     self.arm_aiming(self.action_button.rect.center, pos)
