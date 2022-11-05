@@ -164,7 +164,7 @@ class Game():
         if self.action_button.clicking:
             if self.player_or_head:
                 pos = pygame.mouse.get_pos()
-                if self.finger_on_aim is None:
+                if self.finger_on_aim is not None:
                     device = touch.get_device(0)
                     data = touch.get_finger(device,self.finger_on_aim)
                     pos = (data["x"],data["y"])
