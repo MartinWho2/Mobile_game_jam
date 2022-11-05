@@ -166,6 +166,7 @@ class Game():
                 pos = pygame.mouse.get_pos()
                 if self.finger_on_aim[0]:
                     pos = self.finger_on_aim[1:]
+                    pygame.draw.rect(self.window,"red",pygame.rect.Rect(pos[0],pos[1],10,10))
                 self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
                 if self.distance > self.action_button.rect.w / 2:
                     self.arm_aiming(self.action_button.rect.center, pos)
