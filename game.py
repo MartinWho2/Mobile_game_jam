@@ -1,5 +1,4 @@
 import pygame
-from pygame._sdl2 import touch
 import math
 
 from spritesheet import Spritesheet
@@ -166,7 +165,6 @@ class Game():
                 pos = pygame.mouse.get_pos()
                 if self.finger_on_aim[0]:
                     pos = self.finger_on_aim[1:]
-                    pygame.draw.rect(self.window,"red",pygame.rect.Rect(pos[0],pos[1],10,10))
                 self.distance = pygame.Vector2(pos[0], pos[1]).distance_to(self.action_button.rect.center)
                 if self.distance > self.action_button.rect.w / 2:
                     self.arm_aiming(self.action_button.rect.center, pos)
@@ -242,6 +240,7 @@ class Game():
             self.texts.append(text)
         self.action_button.image = self.action_button.images[False]
         self.action_button.button_state = False
+        self.finger_on_aim[0] = False
 
 
     def blit_map(self):
@@ -279,6 +278,7 @@ class Game():
     def create_map_image(self):
         map_y, map_x = len(self.map), len(self.map[1])
         map_image = pygame.surface.Surface((map_x * self.tile_size, map_y * self.tile_size))
+        #map_image.blit(pygame.transform.scale(pygame.image.load(self.path+"media/lab-bg3.jpg").convert(),(map_x * self.tile_size, map_y * self.tile_size)),(0,0))
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
@@ -319,7 +319,7 @@ class Game():
             rect2 = pointing_arrow.get_rect()
             center = pygame.Vector2(dx, dy)
             if center.length() != 0:
-                center.scale_to_length(self.w / 16)
+                center.scale_to_length(self.tile_size*2)
             rect1.center = initial_pos + center
             rect2.center = self.player.rect.center + center + self.offset
             self.window.blit(pointing_arrow, rect1)

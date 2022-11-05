@@ -9,9 +9,10 @@ class Menu:
         self.font = pygame.font.SysFont('arial', 50)
         self.levels_buttons = []
 
-        self.open_screen = pygame.transform.scale(pygame.image.load(path+'media/open_screen.png'), (self.window.get_width(), self.window.get_height()))
+        self.open_screen = pygame.transform.scale(pygame.image.load(path+'media/open_screen.png').convert(), (self.window.get_width(), self.window.get_height()))
         self.open_screen_rect = self.open_screen.get_rect()
-        self.win_image = pygame.image.load(path + 'media/win_image.png')
+        self.win_image = pygame.transform.scale(pygame.image.load(path + 'media/win_image.png').convert(),
+                                                (self.window.get_width(), self.window.get_height()))
         self.win_image_rect = self.win_image.get_rect()
 
         self.play_button = pygame.transform.scale(pygame.image.load(path+'media/button.png').convert_alpha(), (400, 100))
@@ -95,7 +96,6 @@ class Menu:
         elif self.state == 2:
             for button in self.levels_buttons:
                 self.window.blit(button.image, button.rect)
-
             self.window.blit(self.back_button.image, self.back_button.rect)
         elif self.state == 3:
             self.window.blit(self.sound_text, self.sound_text_rect)

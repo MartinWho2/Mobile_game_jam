@@ -61,15 +61,13 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     running = False
-                elif event.type == pygame.FINGERMOTION:
-                    print(f"fingers - compare {event.finger_id}, {game.buttons[game.action_button]}")
-                    if event.finger_id == game.buttons[game.action_button]:
+                elif event.type == pygame.FINGERMOTION and event.finger_id == game.buttons[game.action_button]:
                         print(f"moving of x: {event.dx * window.get_width()}, y: {event.dy * window.get_height()}")
                         game.finger_on_aim[1] = game.finger_on_aim[1] + event.dx * window.get_width()
                         game.finger_on_aim[2] = game.finger_on_aim[2] + event.dy * window.get_height()
+
                 elif event.type == pygame.FINGERDOWN:
-                    print(f"finger-down : {event.finger_id + 1}")
-                    finger_id = event.finger_id + 1
+                    print(f"finger-down : {event.finger_id}")
                     x, y = event.x * window.get_width(), event.y * window.get_height()
                     for button in game.buttons_interface:
                         if button.rect.collidepoint(x, y):
@@ -86,8 +84,8 @@ def main():
 
                 elif event.type == pygame.FINGERUP:
                     x, y = event.x * window.get_width(), event.y * window.get_height()
-                    finger_id = event.finger_id + 1
-                    print(f"finger-up : {event.finger_id + 1}")
+                    finger_id = event.finger_id
+                    print(f"finger-up : {event.finger_id}")
                     for value in game.buttons.items():
                         if value[1] == finger_id:
                             print(f"Releasing touch on button {value[0].name}")
@@ -104,8 +102,6 @@ def main():
                             if game.reset_button.rect.collidepoint(x, y):
                                 game.restart()
 
-                elif event.type == pygame.FINGERMOTION:
-                    pass
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if game.action_button.rect.collidepoint(event.pos):
                         game.action_button.click(True)
