@@ -10,7 +10,7 @@ pygame.init()
 window = pygame.display.set_mode((1280, 720))
 
 clock = pygame.time.Clock()
-fps = 80
+fps = 60
 
 
 def platform():
@@ -155,11 +155,16 @@ def main():
                                              game.collidable_sprites, [game.head_sprite])
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
+                            game.action_button.image = game.action_button.images_with_head["head"]
+                            game.action_button.button_state = True
 
                         else:
                             if pygame.sprite.collide_mask(game.player, game.head):
                                 game.head.kill()  # Alternate between player and head
                                 game.player_or_head = not game.player_or_head
+                                game.action_button.image = game.action_button.images_with_head["body"]
+                                game.action_button.button_state = False
+
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:

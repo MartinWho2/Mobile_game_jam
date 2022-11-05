@@ -21,7 +21,7 @@ class Game():
         self.menu_music = pygame.mixer.Sound(path+"media/menu_music.wav")
         self.level_music = pygame.mixer.Sound(path+"media/level_music.wav")
         self.music = pygame.mixer.Channel(1)
-        self.music.set_volume(0.5)
+        self.music.set_volume(0)
         self.music.play(self.menu_music,-1)
         self.path = path
         self.tile_size = 40
@@ -53,10 +53,25 @@ class Game():
         reset_image = pygame.transform.scale(pygame.image.load(path + 'media/reset.png').convert_alpha(), (100, 100))
         reset_button.blit(reset_image, (0, 0))
         self.reset_button = Int_button(reset_button, pygame.Vector2(self.w - 210, 5), 100, name="reset")
+        head_image = pygame.image.load(self.path + 'media/head/head_button.png').convert_alpha()
+        head_image = pygame.transform.scale(head_image,(head_image.get_width()*2,head_image.get_height()*2))
         action_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
+        arm_image = pygame.image.load(self.path + 'media/arm.png').convert_alpha()
+        arm_image = pygame.transform.scale(arm_image,(round(arm_image.get_width()*1.5),
+                                                      round(arm_image.get_height()*1.5)))
+        arm_image = pygame.transform.rotate(arm_image,90)
+        head_button_image = pygame.image.load(self.path + 'media/action_button_head.png').convert_alpha()
+        head_button_image = pygame.transform.scale(head_button_image,(head_button_image.get_width()*2,head_button_image.get_height()*2))
+        action3_surface = action_surface.copy()
+        action3_surface.blit(head_button_image,(round(action3_surface.get_width()/2-head_button_image.get_width()/2),
+                                                round(action3_surface.get_height()/2-head_button_image.get_height()/2)))
+        action_surface.blit(arm_image, (action_surface.get_width() / 2 - arm_image.get_width() / 2,
+                                         action_surface.get_height() / 2 - arm_image.get_height() / 2))
         self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 5.5 / 7),
-                                        round(self.w / 16), name="action")
+                                        round(self.w / 16), name="action", images=action3_surface)
         action2_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
+        action2_surface.blit(head_image, (round(action_surface.get_width() / 2 - head_image.get_width() / 2),
+                                         round(action_surface.get_height() / 2 - head_image.get_height() / 2)))
         self.action2_button = Int_button(action2_surface, pygame.Vector2(self.w * 4 / 7, self.h * 5.5 / 7),
                                         round(self.w / 16), name="action2")
         self.level = 1
@@ -220,6 +235,8 @@ class Game():
         for infos in self.levels_infos['texts'][self.level-1]:
             text = Text(infos[0], infos[1], self.tile_size)
             self.texts.append(text)
+        self.action_button.image = self.action_button.images[False]
+        self.action_button.button_state = False
 
 
     def blit_map(self):
