@@ -8,7 +8,7 @@ dictionnaire = {
         [[(15, 1), 0, False, False], [(20, 4), 1, True, True], [(16, 8), 2, False, False], [(5, 11), 3, True, True]],
         [[(5, 5), 0, False, False]],
         [[(11, 11), 0, False, False], [(22, 11), 1, False, False]],
-        [[(14,1), 0, False, False], [(26, 5), 1, True, True], [(26, 9), 2, False, True]],
+        [[(14,1), 0, False, False], [(26, 6), 1, True, True], [(26, 9), 2, False, True]],
         [[(22, 11), 0, False, False], [(25, 9), 1, True, True], [(13, 6), 2, False, False]]
     ],
     'vent': [

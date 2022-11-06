@@ -1,12 +1,15 @@
-background à rajouter pour rendre plus beau
-Murs à redessiner (probablement sous format de tileset)
-Bugs de collision
-Flèche qui vise montre de l'endroit où ca va atterrir
-Trouver un moyen pour rajouter une icône à l'app
-Rajouter des bruitages et refaire peut-être la musique
-Régler le problème du saut
-Régler le problème du bras avec le laser
-Rajouter des niveaux ?
-Refaire génération texte pour les tutos (plus joli)
-Test pour bien positionner les boutons sur tel
-Améliorer les performances
+[] Background à rajouter pour rendre plus beau
+[] Murs à redessiner (probablement sous format de tileset)
+[] Bugs de collision
+[] Flèche qui vise montre l'endroit où ca va atterrir
+[X] Trouver un moyen pour rajouter une icône à l'app
+[] Rajouter des bruitages et refaire peut-être la musique
+[X] Régler le problème du saut
+[X] Régler le problème du bras avec le laser
+[X] Régler les petits pixels avec alpha très bas
+[] Rajouter des niveaux ?
+[] Refaire génération texte pour les tutos (plus joli)
+[] Test pour bien positionner les boutons sur tel
+[] Améliorer les performances
+[] Montrer bien quelles vents sont reliées et quels boutons font quoi
+[X] Changer le background

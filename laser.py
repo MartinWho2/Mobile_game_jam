@@ -86,3 +86,5 @@ class Laser(pygame.sprite.Sprite):
             self.rect.topleft = (pos[0] * tile_size, pos[1] * tile_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.direction = direction
+        self.initial_pos = pos
+        print("My tiles are ", self.tiles, "   , initial pos ", pos)

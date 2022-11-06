@@ -82,7 +82,7 @@ class Game():
                         self.pause_button: False, self.action_button: False, self.action2_button: False}
         self.map = create_map(self.path, self.level)
 
-        self.tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/tile_test.png").convert_alpha(),
+        self.tile_image = pygame.transform.scale(pygame.image.load(self.path + "media/tile.png").convert_alpha(),
                                                  (self.tile_size, self.tile_size))
         self.glass_image = pygame.transform.scale(pygame.image.load(self.path + 'media/vitre.png').convert_alpha(),
                                                   (self.tile_size, self.tile_size))
@@ -236,7 +236,7 @@ class Game():
                 self.portal_rect = portal.rect
             self.portal_sprites.add(portal)
         for infos in self.levels_infos['texts'][self.level-1]:
-            text = Text(infos[0], infos[1], self.tile_size)
+            text = Text(infos[0], infos[1], self.tile_size, self.path)
             self.texts.append(text)
         self.action_button.image = self.action_button.images[False]
         self.action_button.button_state = False
@@ -278,12 +278,13 @@ class Game():
     def create_map_image(self):
         map_y, map_x = len(self.map), len(self.map[1])
         map_image = pygame.surface.Surface((map_x * self.tile_size, map_y * self.tile_size))
-        #map_image.blit(pygame.transform.scale(pygame.image.load(self.path+"media/lab-bg3.jpg").convert(),(map_x * self.tile_size, map_y * self.tile_size)),(0,0))
+        map_image.blit(pygame.transform.scale(pygame.image.load(self.path+"media/lab-bg3.png").convert(),(map_x * self.tile_size, map_y * self.tile_size)),(0,0))
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
                 if tile != 1:
-                    pygame.draw.rect(map_image,(255,255,255),pygame.rect.Rect(c_index * self.tile_size, r_index * self.tile_size,self.tile_size,self.tile_size))
+                    pass
+                    #pygame.draw.rect(map_image,(255,255,255),pygame.rect.Rect(c_index * self.tile_size, r_index * self.tile_size,self.tile_size,self.tile_size))
                     #map_image.blit(self.back_tile_image, (c_index * self.tile_size, r_index * self.tile_size))
                 if tile == 1:
                     map_image.blit(self.tile_image, (c_index * self.tile_size, r_index * self.tile_size))

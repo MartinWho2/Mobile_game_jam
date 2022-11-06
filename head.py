@@ -49,7 +49,8 @@ class Head(Moving_sprite):
         else:
             self.state = 'idle'
     def jump(self):
-        if not self.is_jumping:
+        if self.on_ground:
             self.state = 'jump'
             self.is_jumping = True
+            self.on_ground = False
             self.speed.y = -6

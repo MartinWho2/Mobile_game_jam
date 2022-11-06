@@ -39,7 +39,14 @@ def main():
     icon = pygame.image.load(path+"media/icon.png")
     pygame.display.set_icon(icon)
 
-
+    gradient = pygame.surface.Surface((5,5))
+    gradient.fill((100,100,100))
+    for row in range(1,4):
+        for col in range(1,4):
+            if row != 2 or col != 2:
+                gradient.set_at((col,row),(150,150,150))
+    gradient.set_at((2,2),(200,200,200))
+    gradient = pygame.transform.smoothscale(gradient,window.get_size())
     while running:
         clock.tick(fps)
         dt = (time.time() - before) * fps
@@ -48,7 +55,7 @@ def main():
             dt = 5.0
         display_fps(clock.get_fps())
         pygame.display.flip()
-        window.fill((255, 255, 255))
+        window.blit(gradient,(0,0))
         if in_game:
             msg = game.update(dt)
             if msg == 'end':

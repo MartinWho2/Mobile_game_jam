@@ -53,19 +53,27 @@ class Arm(Moving_sprite):
         laser = self.check_collision(tiles=False, sprite_groups=[lasers], return_sprite=True)
         if laser:
             laser: Laser
+            collision_mask = laser.mask.overlap_mask(self.mask, (self.rect.x - laser.rect.x, self.rect.y - laser.rect.y))
             arm_tile = (math.floor(self.rect.centerx / self.tile_size), math.floor(self.rect.centery / self.tile_size))
-            print(arm_tile,laser.tiles)
+            print("Arm pos: ",arm_tile,laser.tiles)
+            found = self.check_mask_laser(laser.direction,collision_mask)
             if laser.direction in {"up", "down"}:
-                if laser.tiles[0] < arm_tile[1] < laser.tiles[1]:
-                    if laser.direction == "up" and arm_tile[1]+1 != laser.tiles[1]:
-                        laser.tiles = [arm_tile[1]+1,laser.tiles[1]]
-                    elif laser.direction == "down" and laser.tiles[0] != arm_tile[1]-1:
-                        laser.tiles = [laser.tiles[0],arm_tile[1]-1]
+                #if laser.tiles[0] < arm_tile[1] < laser.tiles[1]:
+                    #if laser.direction == "up" and arm_tile[1]+1 != laser.tiles[1]:
+                    #    laser.tiles = [arm_tile[1]+1,laser.tiles[1]]
+                    #elif laser.direction == "down" and laser.tiles[0] != arm_tile[1]-1:
+                    #    laser.tiles = [laser.tiles[0],arm_tile[1]-1]
+                    #else:
+                    #    laser.opened = True
+                    #    return
+                    laser_image = pygame.surface.Surface((self.rect.w,found), pygame.SRCALPHA)
+                    if laser.direction == "up":
+                        laser_image.blit(laser.image, (0, -self.rect.h + found))
                     else:
-                        laser.opened = True
-                        return
-                    laser_range = laser.tiles[1]-laser.tiles[0]
-                    laser.image = pygame.transform.scale(laser.image,(laser.rect.w,laser_range*self.tile_size))
+                        laser_image.blit(laser.image, (0, 0))
+                    laser.image = laser_image
+                    #laser_range = laser.tiles[1]-laser.tiles[0]
+                    #laser.image = pygame.transform.scale(laser.image,(laser.rect.w,laser_range*self.tile_size))
                     laser.mask = pygame.mask.from_surface(laser.image)
                     if laser.direction == "up":
                         laser.rect = laser.image.get_rect(bottomleft=laser.rect.bottomleft)
@@ -73,18 +81,54 @@ class Arm(Moving_sprite):
                         laser.rect = laser.image.get_rect(topleft=laser.rect.topleft)
 
             else:
-                if laser.tiles[0] < arm_tile[0] < laser.tiles[1]:
-                    if laser.direction == "left" and arm_tile[0]+1 != laser.tiles[1]:
-                        laser.tiles = [arm_tile[0] + 1, laser.tiles[1]]
-                    elif laser.direction == "right" and arm_tile[1]-1 != laser.tiles[0]:
-                        laser.tiles = [laser.tiles[0], arm_tile[1] - 1]
+                #if laser.tiles[0] < arm_tile[0] < laser.tiles[1]:
+                    print("collided with arm ", laser.direction, "found collision at pixel ", found)
+                    #if laser.direction == "left" and arm_tile[0]+1 != laser.tiles[1]:
+                    #    laser.tiles = [arm_tile[0] + 1, laser.tiles[1]]
+                    #elif laser.direction == "right" and arm_tile[1]-1 != laser.tiles[0]:
+                    #    laser.tiles = [laser.tiles[0], arm_tile[1] - 1]
+                    #else:
+                    #    laser.opened = True
+                    #    return
+                    #laser_range = laser.tiles[1] - laser.tiles[0]
+                    #laser.image = pygame.transform.scale(laser.image, (laser_range * self.tile_size, laser.rect.h))
+                    laser_image = pygame.surface.Surface((found, self.rect.h), pygame.SRCALPHA)
+                    if laser.direction == "left":
+                        laser_image.blit(laser.image, (-self.rect.w + found, 0))
                     else:
-                        laser.opened = True
-                        return
-                    laser_range = laser.tiles[1] - laser.tiles[0]
-                    laser.image = pygame.transform.scale(laser.image, (laser_range * self.tile_size, laser.rect.h))
+                        laser_image.blit(laser.image, (0, 0))
+                    laser.image = laser_image
                     laser.mask = pygame.mask.from_surface(laser.image)
                     if laser.direction == "left":
                         laser.rect = laser.image.get_rect(topright=laser.rect.topright)
                     else:
                         laser.rect = laser.image.get_rect(topleft=laser.rect.topleft)
+    def check_mask_laser(self,direction:str,mask:pygame.mask.Mask):
+        size = mask.get_size()
+        print("Size of mask ",size)
+        found = False
+        if direction == "up":
+            for row in reversed(range(size[1])):
+                for column in range(size[0]):
+                    if mask.get_at((column,row)) == 1:
+                        found = size[1] - row
+                        break
+        elif direction == "down":
+            for row in range(size[1]):
+                for column in range(size[0]):
+                    if mask.get_at((column,row)) == 1:
+                        found = row
+                        break
+        elif direction == "left":
+            for column in reversed(range(size[0])):
+                for row in range(size[1]):
+                    if mask.get_at((column,row)) == 1:
+                        found = size[0] - column
+                        break
+        elif direction == "right":
+            for column in range(size[0]):
+                for row in range(size[1]):
+                    if mask.get_at((column,row)) == 1:
+                        found = column
+                        break
+        return found

@@ -22,6 +22,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.speed = pygame.Vector2(0, 0)
         self.gravity, self.friction = self.tile_size / 128, -0.2
         self.is_jumping = False
+        self.on_ground = True
         self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)
         self.flip_mask = 0
@@ -38,6 +39,8 @@ class Moving_sprite(pygame.sprite.Sprite):
         if sprite_groups == "normal":
             sprite_groups = self.sprite_elements
         get_hits = []
+        if abs(self.speed.y) > 4:
+            self.on_ground = False
         # Collision with tiles
         if tiles:
             # Checks for collisions with tiles near the sprite
@@ -79,6 +82,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                     movement = self.find_bits_from_mask(mask, "down")
                     self.pos.y -= movement
                     self.is_jumping = False
+                    self.on_ground = True
                     if self.__class__ == player.Player:
                         if 'without_head' not in self.state:
                             self.state = 'idle'
