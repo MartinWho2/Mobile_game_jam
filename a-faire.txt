@@ -8,8 +8,10 @@
 [X] Régler le problème du bras avec le laser
 [X] Régler les petits pixels avec alpha très bas
 [] Rajouter des niveaux ?
-[] Refaire génération texte pour les tutos (plus joli)
+[X] Refaire génération texte pour les tutos (plus joli)
 [] Test pour bien positionner les boutons sur tel
 [] Améliorer les performances
 [] Montrer bien quelles vents sont reliées et quels boutons font quoi
 [X] Changer le background
+[] Empêcher de tirer un bras sur un mur juste à côté et corriger son décalage
+[] Empêcher les portes d'apparaître sur le joueur

@@ -38,7 +38,6 @@ def main():
     time.sleep(0.1)
     icon = pygame.image.load(path+"media/icon.png")
     pygame.display.set_icon(icon)
-
     gradient = pygame.surface.Surface((5,5))
     gradient.fill((100,100,100))
     for row in range(1,4):
@@ -94,11 +93,11 @@ def main():
                     finger_id = event.finger_id
                     print(f"finger-up : {event.finger_id}")
                     for value in game.buttons.items():
-                        if value[1] == finger_id:
+                        if value[1] is finger_id:
                             print(f"Releasing touch on button {value[0].name}")
                             if value[0] == game.action_button and game.player_or_head:
                                 game.finger_on_aim[0] = False
-                                game.player.launch_arm(game.arms_direction)
+                                game.player.launch_arm(game.arms_direction, game.launch_place)
                                 game.arms_available -= 1
                             game.buttons[value[0]] = False
                             value[0].click(False)
@@ -124,7 +123,7 @@ def main():
                         if game.player_or_head:
                             if game.arms_available > 0:
                                 if game.distance > game.action_button.rect.w/2 and not game.buttons[game.action_button]:
-                                    game.player.launch_arm(game.arms_direction)
+                                    game.player.launch_arm(game.arms_direction, game.launch_place)
                                     game.arms_available -= 1
                         else:
                             for button in game.buttons_in_game:

@@ -121,6 +121,7 @@ class Game():
         self.arms_direction = pygame.Vector2(0, 0)
         self.pointing_arrow = pygame.image.load(path + "media/pointing_arrow.png").convert_alpha()
         self.distance = 0
+        self.launch_place = pygame.Vector2(0,0)
 
         # Images
         self.player_spritesheet = Spritesheet('player', path)
@@ -145,8 +146,11 @@ class Game():
             self.player.move(self, dt)
             time2 = pygame.time.get_ticks()
             print(f"The player movements are done in {time2 - time} ms")
+            self.blit_player(self.player_spritesheet, dt)
+
         else:
             self.player.fall(dt)
+            self.blit_player(self.player_spritesheet, dt)
             time2 = pygame.time.get_ticks()
             print(f"The player falling is done in {time2 - time} ms")
             self.head.move(self, dt)
@@ -156,7 +160,6 @@ class Game():
             time2 = pygame.time.get_ticks()
             print(f"The head moves in {time2 - time} ms")
 
-        self.blit_player(self.player_spritesheet, dt)
         time = pygame.time.get_ticks()
         print(f"The player is blitted in {time - time2} ms")
         # Action button
@@ -195,6 +198,7 @@ class Game():
 
         if 31*self.tile_size < self.player.pos.x < 0 or 16*self.tile_size < self.player.pos.y < 0:
             self.restart()
+
     def load_new_level(self):
         self.texts = []
         self.door_sprites.empty()
@@ -311,18 +315,21 @@ class Game():
             dy = actual_pos[1] - initial_pos[1]
             if dx == 0:
                 angle = 90
+                if dy > 0:
+                    angle = -90
             elif dx < 0:
                 angle = 180 - math.degrees(math.atan(dy / dx))
             else:
                 angle = -math.degrees(math.atan(dy / dx))
             pointing_arrow = pygame.transform.rotate(self.pointing_arrow, angle)
             rect1 = pointing_arrow.get_rect()
-            rect2 = pointing_arrow.get_rect()
+            rect2 = rect1.copy()
             center = pygame.Vector2(dx, dy)
             if center.length() != 0:
                 center.scale_to_length(self.tile_size*2)
             rect1.center = initial_pos + center
             rect2.center = self.player.rect.center + center + self.offset
+            self.launch_place.x,self.launch_place.y = rect2.topleft
             self.window.blit(pointing_arrow, rect1)
             self.window.blit(pointing_arrow, rect2)
             self.arms_direction = center

@@ -53,7 +53,7 @@ class Spritesheet:
 
     def animate(self, state, dt):
         animation = self.animations[state]
-        self.frame_idx += self.frames_nrs[state] / (dt * 60)
+        self.frame_idx += self.frames_nrs[state] * dt / 60
         if self.frame_idx >= len(animation):
             self.frame_idx = 0
         return animation[int(self.frame_idx)]

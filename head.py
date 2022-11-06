@@ -25,9 +25,9 @@ class Head(Moving_sprite):
     def move(self, game, dt):
         # Key input
         self.speed.x = 0
-        if game.buttons[game.button_left]:
+        if game.buttons[game.button_left] is not False:
             self.speed.x += -self.w / 230 * dt
-        if game.buttons[game.button_right]:
+        if game.buttons[game.button_right] is not False:
             self.speed.x += self.w / 230 * dt
         self.pos.x += self.speed.x
         self.rect.x = round(self.pos.x)
@@ -48,6 +48,7 @@ class Head(Moving_sprite):
             self.state = 'run_right'
         else:
             self.state = 'idle'
+
     def jump(self):
         if self.on_ground:
             self.state = 'jump'

@@ -31,9 +31,9 @@ class Player(Moving_sprite):
     def move(self, game, dt):
         # Key input
         self.speed.x = 0
-        if game.buttons[game.button_left]:
+        if game.buttons[game.button_left] is not False:
             self.speed.x += -self.w / 350 * dt
-        if game.buttons[game.button_right]:
+        if game.buttons[game.button_right] is not False:
             self.speed.x += self.w / 350 * dt
         self.pos.x += self.speed.x
         self.rect.x = round(self.pos.x)
@@ -64,9 +64,10 @@ class Player(Moving_sprite):
             self.is_jumping = True
             self.speed.y = -8
 
-    def launch_arm(self, movement):
+    def launch_arm(self, movement, launch_place):
         center = pygame.Vector2(self.rect.centerx, self.rect.centery)
-        arm = Arm(self.window, center, movement, self.map, self.tile_size, self.groups_colliding,
+        launch = pygame.Vector2((launch_place.x - center.x)/2+center.x,(launch_place.y - center.y)/2+center.y)
+        arm = Arm(self.window, launch, movement, self.map, self.tile_size, self.groups_colliding,
                   self.player_sprite_group, 2 * self.tile_size, self.path,self.arms_finish)
         self.arms.add(arm)
 
