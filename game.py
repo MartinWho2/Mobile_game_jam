@@ -248,36 +248,37 @@ class Game():
 
 
     def blit_map(self):
+        blit = self.window.blit
         timing = pygame.time.get_ticks()
-        self.window.blit(self.map_image, (self.offset[0], self.offset[1]))
+        blit(self.map_image, (self.offset[0], self.offset[1]))
         timing_2 = pygame.time.get_ticks()
         #print(f"blit map {timing_2-timing} ms")
         for r_index, row in enumerate(self.map):
             for c_index, item in enumerate(row):
                 tile = item
                 if tile == 2:
-                    self.window.blit(self.glass_image, (c_index * self.tile_size+self.offset[0], r_index * self.tile_size+self.offset[1]))
+                    blit(self.glass_image, (c_index * self.tile_size+self.offset[0], r_index * self.tile_size+self.offset[1]))
         timing = pygame.time.get_ticks()
         #print(f"blit glass {timing - timing_2}")
         for vent in self.vent_sprites:
-            self.window.blit(vent.image,(vent.rect.x+self.offset[0],vent.rect.y+self.offset[1]))
+            blit(vent.image,(vent.rect.x+self.offset[0],vent.rect.y+self.offset[1]))
         timing_2 = pygame.time.get_ticks()
         for button in self.buttons_in_game:
             if button.on == True:
-                self.window.blit(button.image_on, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
+                blit(button.image_on, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
             else:
-                self.window.blit(button.image_off, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
+                blit(button.image_off, (button.rect.x+self.offset[0],button.rect.y+self.offset[1]))
         #print(f"blit vent {timing_2 - timing} ms")
         for door in self.door_sprites:
-            self.window.blit(door.image,(door.rect.x+self.offset[0],door.rect.y+self.offset[1]))
+            blit(door.image,(door.rect.x+self.offset[0],door.rect.y+self.offset[1]))
         timing = pygame.time.get_ticks()
         #print(f"blit doors {timing - timing_2}")
         for laser in self.laser_sprites:
-            self.window.blit(laser.image,(laser.rect.x+self.offset[0],laser.rect.y+self.offset[1]))
+            blit(laser.image,(laser.rect.x+self.offset[0],laser.rect.y+self.offset[1]))
         for tower in self.tower_sprites:
-            self.window.blit(tower.image,(tower.rect.x+self.offset[0],tower.rect.y+self.offset[1]))
+            blit(tower.image,(tower.rect.x+self.offset[0],tower.rect.y+self.offset[1]))
         for portal in self.portal_sprites:
-            self.window.blit(portal.image, (portal.rect.x+self.offset[0],portal.rect.y+self.offset[1]))
+            blit(portal.image, (portal.rect.x+self.offset[0],portal.rect.y+self.offset[1]))
 
     def create_map_image(self):
         map_y, map_x = len(self.map), len(self.map[1])
