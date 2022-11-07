@@ -160,7 +160,7 @@ def main():
                     if game.action2_button.clicking:
                         game.action2_button.click(False)
                         if game.player_or_head:
-                            game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
+                            game.head = Head(game.player.pos.copy(), game.map, game.tile_size, game.window, game.path,
                                              game.collidable_sprites, [game.head_sprite],game.player.speed)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
@@ -194,8 +194,8 @@ def main():
                         game.pause_button.click(True)
                     if event.key == pygame.K_r:
                         if game.player_or_head:
-                            game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
-                                             game.collidable_sprites, [game.head_sprite])
+                            game.head = Head(game.player.pos.copy(), game.map, game.tile_size, game.window, game.path,
+                                             game.collidable_sprites, [game.head_sprite],game.player.speed)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
 

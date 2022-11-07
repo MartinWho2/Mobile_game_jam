@@ -7,6 +7,7 @@ class Head(Moving_sprite):
                  groups_colliding, head_sprite_group, player_speed):
         self.image = pygame.image.load(path + 'media/head.png').convert_alpha()
         self.path = path
+        player_pos.x += tile_size * 5 / 16
         super().__init__(player_pos, self.image, round(tile_size * 5 / 8), tiles, tile_size, groups_colliding,
                          head_sprite_group)
         self.on_ground = False
@@ -24,12 +25,11 @@ class Head(Moving_sprite):
         self.rect.h *= 2
 
     def animate_detachment(self,speed:pygame.Vector2):
-        self.speed = speed.copy()
+        self.speed = pygame.Vector2(speed.x,speed.y-self.tile_size/10)
+        self.fall(1)
     def move(self, game, dt):
         # Key input
         self.speed.x = 0
-        pygame.draw.rect(game.window,"black",(self.rect_collision.x,self.rect_collision.y,
-                                              self.rect_collision.w,self.rect_collision.h))
         if game.buttons[game.button_left] is not False:
             self.speed.x += -self.w / 230 * dt
         if game.buttons[game.button_right] is not False:
@@ -43,7 +43,7 @@ class Head(Moving_sprite):
         self.fall(dt)  # Vertical hits, see moving_sprite.py
         self.rect.y = round(self.pos.y)
 
-        self.rect_collision.midbottom = (self.rect.right,self.rect.bottom+self.rect.h)
+        self.rect_collision.center = self.rect.center
         # Update state
         if self.is_jumping:
             self.state = 'jump'

@@ -37,8 +37,8 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
 
-    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal",return_sprite=False, breaking=False) -> list[
-        pygame.mask.Mask]:
+    def check_collision(self, tiles=True, sprite_groups: [str, list] = "normal",
+                        return_sprite=False, breaking=False) -> list[pygame.mask.Mask]:
         if sprite_groups == "normal":
             sprite_groups = self.sprite_elements
         get_hits = []
@@ -65,11 +65,12 @@ class Moving_sprite(pygame.sprite.Sprite):
         # Collision with elements
         for group in sprite_groups:
             for element in group:
-                mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
-                if mask.count():
-                    if return_sprite:
-                        return element
-                    get_hits.append(mask)
+                if self.rect.colliderect(element.rect):
+                    mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
+                    if mask.count():
+                        if return_sprite:
+                            return element
+                        get_hits.append(mask)
         print(f"Collision with sprites : player {pygame.time.get_ticks()-a}")
         return get_hits
 
