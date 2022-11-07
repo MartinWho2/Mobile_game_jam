@@ -93,7 +93,7 @@ def main():
                     finger_id = event.finger_id
                     print(f"finger-up : {event.finger_id}")
                     for value in game.buttons.items():
-                        if value[1] is finger_id:
+                        if value[1] is not False and value[1] == finger_id:
                             print(f"Releasing touch on button {value[0].name}")
                             if value[0] == game.action_button and game.player_or_head:
                                 game.finger_on_aim[0] = False
