@@ -8,7 +8,7 @@ from head import Head
 
 pygame.init()
 window = pygame.display.set_mode((1280, 720))
-
+fps_font = pygame.font.SysFont("arial",30)
 clock = pygame.time.Clock()
 fps = 60
 
@@ -20,7 +20,7 @@ def platform():
         return "win"
 
 def display_fps(dt):
-    fps_text = pygame.font.SysFont("arial",30).render(str(dt), False, (0, 0, 0))
+    fps_text = fps_font.render(str(dt), False, (0, 0, 0))
     window.blit(fps_text, (0, 0))
 
 
@@ -35,7 +35,6 @@ def main():
     game = Game(window, path)
     menu = Menu(window, path)
     before = time.time()
-    time.sleep(0.1)
     icon = pygame.image.load(path+"media/icon.png")
     pygame.display.set_icon(icon)
     gradient = pygame.surface.Surface((5,5))
