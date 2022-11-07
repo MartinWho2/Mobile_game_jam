@@ -110,7 +110,7 @@ class Game():
 
         # Player
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
-                             self.collidable_sprites, [self.player_sprite], self.arm_sprite, )
+                             self.collidable_sprites, [self.player_sprite], self.arm_sprite)
         self.head = Head(pygame.Vector2(0, 0), self.map, self.tile_size, self.window, self.path,
                          self.collidable_sprites, [self.head_sprite], self.player.speed)
         self.player_or_head = True  # Player is True, head is False
@@ -121,7 +121,6 @@ class Game():
         self.arms_direction = pygame.Vector2(0, 0)
         self.pointing_arrow = pygame.image.load(path + "media/pointing_arrow.png").convert_alpha()
         self.distance = 0
-        self.launch_place = pygame.Vector2(0,0)
 
         # Images
         self.player_spritesheet = Spritesheet('player', path)
@@ -316,7 +315,6 @@ class Game():
                 center.scale_to_length(self.tile_size*2)
             rect1.center = initial_pos + center
             rect2.center = self.player.rect.center + center + self.offset
-            self.launch_place.x,self.launch_place.y = rect2.topleft
             self.window.blit(pointing_arrow, rect1)
             self.window.blit(pointing_arrow, rect2)
             self.arms_direction = center

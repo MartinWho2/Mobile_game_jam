@@ -64,10 +64,9 @@ class Player(Moving_sprite):
             self.is_jumping = True
             self.speed.y = -8
 
-    def launch_arm(self, movement, launch_place):
+    def launch_arm(self, movement):
         center = pygame.Vector2(self.rect.centerx, self.rect.centery)
-        launch = pygame.Vector2((launch_place.x - center.x)/2+center.x,(launch_place.y - center.y)/2+center.y)
-        arm = Arm(self.window, launch, movement, self.map, self.tile_size, self.groups_colliding,
+        arm = Arm(self.window, center, movement, self.map, self.tile_size, self.groups_colliding,
                   self.player_sprite_group, 2 * self.tile_size, self.path,self.arms_finish)
         self.arms.add(arm)
 

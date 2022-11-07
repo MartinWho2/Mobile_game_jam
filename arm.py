@@ -16,14 +16,10 @@ class Arm(Moving_sprite):
                 angle = -90
         image = pygame.transform.rotate(pygame.image.load(path + 'media/arm.png').convert_alpha(), angle+90)
         super().__init__(default_spawn, image, image.get_width(), tiles, tile_factor, groups_colliding, groups_including, image.get_height())
-        self.rect.centerx = default_spawn.x
-        if movement.y < 0:
-            self.rect.y = default_spawn.y + 25
-
         self.rect.center = default_spawn.x, default_spawn.y
         self.window = window
         self.movement = movement
-        self.movement.scale_to_length(20)
+        self.movement.scale_to_length(round(self.tile_size/2))
         self.moving = True
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.arm_finish = arm_finish
