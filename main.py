@@ -5,6 +5,7 @@ from sys import platform as _sys_platform
 from os import environ
 import time
 from head import Head
+from pygame._sdl2 import touch
 
 pygame.init()
 window = pygame.display.set_mode((1280, 720))
@@ -34,6 +35,7 @@ def main():
     in_game = False
     game = Game(window, path)
     menu = Menu(window, path)
+    tactile = touch.get_num_devices()
     before = time.time()
     icon = pygame.image.load(path+"media/icon.png")
     pygame.display.set_icon(icon)
@@ -61,7 +63,6 @@ def main():
                 menu.state = 6
                 game.music.stop()
                 game.music.play(game.menu_music, -1)
-            timing = pygame.time.get_ticks()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -106,7 +107,7 @@ def main():
                                 menu.state = 4
                                 game.music.stop()
                                 game.music.play(game.menu_music,-1)
-                            if game.reset_button.rect.collidepoint(x, y):
+                            elif game.reset_button.rect.collidepoint(x, y):
                                 game.restart()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -114,8 +115,7 @@ def main():
                         game.action_button.click(True)
                     if game.action2_button.rect.collidepoint(event.pos):
                         game.action2_button.click(True)
-                    if game.reset_button.rect.collidepoint(event.pos):
-                        game.restart()
+
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if game.action_button.clicking:
                         game.action_button.click(False)
