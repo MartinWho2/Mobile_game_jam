@@ -112,7 +112,7 @@ class Game():
         self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
                              self.collidable_sprites, [self.player_sprite], self.arm_sprite, )
         self.head = Head(pygame.Vector2(0, 0), self.map, self.tile_size, self.window, self.path,
-                         self.collidable_sprites, [self.head_sprite])
+                         self.collidable_sprites, [self.head_sprite], self.player.speed)
         self.player_or_head = True  # Player is True, head is False
         self.arm_detached = False
 

@@ -20,7 +20,9 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = pos.x, pos.y
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = self.tile_size / 128, -0.2
+        self.gravity = self.tile_size / 128
+        self.friction = - self.gravity * 1.56
+        self.MAX_SPEED = 30 * self.gravity
         self.is_jumping = False
         self.on_ground = True
         self.max_speed = 10
@@ -30,6 +32,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.on_platform = False
         self.was_on_platform = 0
         self.map_size = [len(self.tiles), len(self.tiles[0])]
+        self.state = None
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
@@ -48,7 +51,8 @@ class Moving_sprite(pygame.sprite.Sprite):
             for r_index, row in enumerate(self.tiles):
                 for c_index, item in enumerate(row):
                     tile = item
-                    if tile != 0:
+                    if tile != 0 and self.rect.colliderect((c_index*self.tile_size, r_index*self.tile_size,
+                                                            self.tile_size, self.tile_size)):
                         mask = self.collide_with_mask(self.tile, (c_index * self.tile_size, r_index * self.tile_size))
                         if mask.count():
                             if item == 2 and breaking:
@@ -142,6 +146,8 @@ class Moving_sprite(pygame.sprite.Sprite):
     def fall(self, dt):
         self.pos.y += 0.5 * self.gravity * (dt ** 2) + self.speed.y * dt
         self.speed.y += self.gravity * dt
+        if self.speed.y > self.MAX_SPEED:
+            self.speed.y = self.MAX_SPEED
         self.rect.y = round(self.pos.y)
         hits = self.check_collision()
         self.collide(hits, True)

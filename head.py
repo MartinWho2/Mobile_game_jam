@@ -4,11 +4,13 @@ from moving_sprite import Moving_sprite
 
 class Head(Moving_sprite):
     def __init__(self, player_pos: pygame.Vector2, tiles, tile_size: int, window: pygame.Surface, path: str,
-                 groups_colliding, head_sprite_group):
+                 groups_colliding, head_sprite_group, player_speed):
         self.image = pygame.image.load(path + 'media/head.png').convert_alpha()
         self.path = path
         super().__init__(player_pos, self.image, round(tile_size * 5 / 8), tiles, tile_size, groups_colliding,
                          head_sprite_group)
+        self.on_ground = False
+        self.is_jumping = True
         self.window = window
         self.w, self.h = self.window.get_size()
         self.state = 'jump'
@@ -16,15 +18,18 @@ class Head(Moving_sprite):
         idle_mask = pygame.mask.from_surface(self.idle_mask)
         self.masks = {"idle": idle_mask}
         self.idle_idle_mask = idle_mask
-        self.animate_detachment()
+        self.animate_detachment(player_speed)
         self.rect_collision = self.mask.get_rect(midbottom=(self.rect.right,self.rect.bottom+self.rect.h))
+        self.rect.w *= 2
+        self.rect.h *= 2
 
-    def animate_detachment(self):
-        self.speed = pygame.Vector2(-self.w / 200, self.w / 200)
-
+    def animate_detachment(self,speed:pygame.Vector2):
+        self.speed = speed.copy()
     def move(self, game, dt):
         # Key input
         self.speed.x = 0
+        pygame.draw.rect(game.window,"black",(self.rect_collision.x,self.rect_collision.y,
+                                              self.rect_collision.w,self.rect_collision.h))
         if game.buttons[game.button_left] is not False:
             self.speed.x += -self.w / 230 * dt
         if game.buttons[game.button_right] is not False:

@@ -5,7 +5,6 @@ from sys import platform as _sys_platform
 from os import environ
 import time
 from head import Head
-from pygame._sdl2 import touch
 
 pygame.init()
 window = pygame.display.set_mode((1280, 720))
@@ -35,7 +34,6 @@ def main():
     in_game = False
     game = Game(window, path)
     menu = Menu(window, path)
-    tactile = touch.get_num_devices()
     before = time.time()
     icon = pygame.image.load(path+"media/icon.png")
     pygame.display.set_icon(icon)
@@ -101,14 +99,13 @@ def main():
                                 game.arms_available -= 1
                             game.buttons[value[0]] = False
                             value[0].click(False)
-
-                            if game.pause_button.rect.collidepoint(x, y):
-                                in_game = False
-                                menu.state = 4
-                                game.music.stop()
-                                game.music.play(game.menu_music,-1)
-                            elif game.reset_button.rect.collidepoint(x, y):
-                                game.restart()
+                    if game.pause_button.rect.collidepoint(x, y):
+                        in_game = False
+                        menu.state = 4
+                        game.music.stop()
+                        game.music.play(game.menu_music,-1)
+                    elif game.reset_button.rect.collidepoint(x, y):
+                        game.restart()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if game.action_button.rect.collidepoint(event.pos):
@@ -164,7 +161,7 @@ def main():
                         game.action2_button.click(False)
                         if game.player_or_head:
                             game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
-                                             game.collidable_sprites, [game.head_sprite])
+                                             game.collidable_sprites, [game.head_sprite],game.player.speed)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
                             game.action_button.image = game.action_button.images_with_head["head"]
