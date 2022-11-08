@@ -39,7 +39,12 @@ def create_map(path: str, level: int) -> list:
         file.close()
     return carte
 
-
+def show_mask(mask: pygame.mask.Mask):
+    size = mask.get_size()
+    for column in range(size[0]):
+        for row in range(size[1]):
+            print(mask.get_at((column, row)),end="")
+        print()
 
 def return_spritesheet(animations):
     output = []

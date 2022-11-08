@@ -5,7 +5,7 @@ class Vent(pygame.sprite.Sprite):
     def __init__(self, path, coo, dest, group, tile_size, turned=False):
         super().__init__()
         self.tile_size = tile_size
-        self.image = pygame.image.load(path + 'media/vent.png').convert_alpha()
+        self.image = pygame.image.load(path + 'media/vent.png').convert()
         self.rect = self.image.get_rect()
         self.rect.x = coo[0]*self.tile_size
         self.rect.y = coo[1]*self.tile_size

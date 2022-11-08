@@ -109,9 +109,9 @@ class Game():
         self.texts = []
 
         # Player
-        self.player = Player(pygame.Vector2(0, 100), self.map, self.tile_size, self.window, self.path,
+        self.player = Player(pygame.Vector2(3000, 100), self.map, self.tile_size, self.window, self.path,
                              self.collidable_sprites, [self.player_sprite], self.arm_sprite)
-        self.head = Head(pygame.Vector2(0, 0), self.map, self.tile_size, self.window, self.path,
+        self.head = Head(pygame.Vector2(3000, 0), self.map, self.tile_size, self.window, self.path,
                          self.collidable_sprites, [self.head_sprite], self.player.speed)
         self.player_or_head = True  # Player is True, head is False
         self.arm_detached = False
@@ -190,12 +190,11 @@ class Game():
                 return 'end'
 
         if not self.player_or_head:
-            if self.head.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
+            if pygame.sprite.spritecollide(self.head,self.laser_sprites,False) and self.head.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
                 self.restart()
-        if self.player.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
+        if pygame.sprite.spritecollide(self.player,self.laser_sprites,False) and self.player.check_collision(tiles=False,sprite_groups=[self.laser_sprites]):
             self.restart()
-
-        if 31*self.tile_size < self.player.pos.x < 0 or 16*self.tile_size < self.player.pos.y < 0:
+        if 0 > self.player.pos.x or self.player.pos.x > (31*self.tile_size) or (16*self.tile_size) < self.player.pos.y or self.player.pos.y < 0:
             self.restart()
 
     def load_new_level(self):
@@ -288,11 +287,11 @@ class Game():
 
     def blit_head(self, spritesheet, dt):
         self.head.image = spritesheet.animate(self.head.state, dt)
-        #self.player.state = 'without_head'
-        #self.head.mask = pygame.mask.from_surface(self.head.image)
+        # self.player.state = 'without_head'
+        # self.head.mask = pygame.mask.from_surface(self.head.image)
         self.head.mask = self.head.masks["idle"]
-        #self.window.blit(self.head.idle_mask,(self.head.rect.x, self.head.rect.y))
-        #pygame.draw.rect(self.window,(0,0,0),self.head.rect_collision)
+        # self.window.blit(self.head.idle_mask,(self.head.rect.x, self.head.rect.y))
+        # pygame.draw.rect(self.window,(0,0,0),self.head.hitbox)
         self.window.blit(self.head.image, (self.head.rect.x+self.offset[0], self.head.rect.y+self.offset[1]))
 
     def arm_aiming(self, initial_pos, actual_pos):

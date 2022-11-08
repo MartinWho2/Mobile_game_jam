@@ -1,7 +1,6 @@
 import pygame
 import player
-
-
+from fonctions import show_mask
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
                  groups_colliding: list[pygame.sprite.Group], groups_including: list[pygame.sprite.Group],
@@ -33,6 +32,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.was_on_platform = 0
         self.map_size = [len(self.tiles), len(self.tiles[0])]
         self.state = None
+        self.hitbox = pygame.rect.Rect(0,0,0,0)
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
@@ -73,7 +73,91 @@ class Moving_sprite(pygame.sprite.Sprite):
                         get_hits.append(mask)
         print(f"Collision with sprites : player {pygame.time.get_ticks()-a}")
         return get_hits
-
+    def reput_hitbox(self):
+        pass
+    def check_collision_opti(self, speed: pygame.Vector2, axis, game, tiles=True, sprite_groups=None,
+                             return_sprite=False, breaking=False, masking=False):
+        """
+        Real check collision
+        :param speed: speed of moving sprite
+        :param axis: True for y and False for x
+        :param tiles: Do tiles need to be checked
+        :param sprite_groups: Sprites to test
+        :param return_sprite: Returns a sprite ?
+        :param breaking: break the glass ?
+        :param masking: Collision with masking
+        :param game: Class game
+        :return:
+        """
+        if sprite_groups is None:
+            sprite_groups = self.sprite_elements
+        masks = []
+        need_to_move = pygame.Vector2(0,0)
+        if tiles:
+            for r_index, row in enumerate(self.tiles):
+                for c_index, tile in enumerate(row):
+                    if tile != 0:
+                        tile_rect = pygame.rect.Rect(c_index*self.tile_size, r_index*self.tile_size,
+                                                            self.tile_size, self.tile_size)
+                        if masking and self.rect.colliderect(tile_rect):
+                            mask = self.collide_with_mask(self.tile,
+                                                          (c_index * self.tile_size, r_index * self.tile_size))
+                            if mask.count():
+                                if tile == 2 and breaking:
+                                    self.tiles[r_index][c_index] = 0
+                                    self.breaking_glass(r_index, c_index)
+                                else:
+                                    masks.append(mask)
+                        elif self.hitbox.colliderect(tile_rect):
+                            need_to_move = self.collide_opti(need_to_move,axis,speed,tile_rect)
+        a = False
+        for group in sprite_groups:
+            for element in group:
+                if self.hitbox.colliderect(element.rect):
+                    if group == game.arm_sprite:
+                        mask = self.collide_with_mask(element.mask,(element.rect.x,element.rect.y))
+                        if mask.count() and self not in game.player.arms:
+                            self.collide([mask],axis)
+                    else:
+                        need_to_move = self.collide_opti(need_to_move,axis,speed,element.rect)
+                    if return_sprite:
+                        return element
+        return need_to_move
+    def collide_opti(self,need_to_move: pygame.Vector2, axis: bool, speed:pygame.Vector2, tile_rect:pygame.rect.Rect):
+        if axis:
+            if speed.y > 0:
+                move = tile_rect.y - self.hitbox.bottom
+                if need_to_move.y > 0:
+                    raise Exception
+                elif need_to_move.y > move:
+                    need_to_move.y = move
+                self.on_ground = True
+                self.is_jumping = False
+                if self.__class__ == player.Player:
+                    if 'without_head' not in self.state:
+                        self.state = 'idle'
+            elif speed.y < 0:
+                move = tile_rect.bottom - self.hitbox.y
+                if need_to_move.y < 0:
+                    raise Exception
+                elif need_to_move.y < move:
+                    need_to_move.y = move
+            speed.y = 0
+        else:
+            if speed.x > 0:
+                move = tile_rect.x - self.hitbox.right
+                if need_to_move.x > 0:
+                    return "error"
+                elif need_to_move.x > move:
+                    need_to_move.x = move
+            elif speed.x < 0:
+                move = tile_rect.right - self.hitbox.x
+                if need_to_move.x < 0:
+                    return "error"
+                elif need_to_move.x < move:
+                    need_to_move.x = move
+            speed.x = 0
+        return need_to_move
     def collide(self, hits: list, axis: bool) -> int:
         """
         Deals with detected collision
@@ -98,7 +182,6 @@ class Moving_sprite(pygame.sprite.Sprite):
                 self.rect.y = round(self.pos.y)
 
             else:
-
                 if self.speed.x > 0:
                     movement = self.find_bits_from_mask(mask, "right")
                     self.pos.x -= movement

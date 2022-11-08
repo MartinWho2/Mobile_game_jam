@@ -1,3 +1,7 @@
+import cProfile
+import io
+import pstats
+
 import pygame
 from game import Game
 from menu import Menu
@@ -124,7 +128,7 @@ def main():
                                     game.arms_available -= 1
                         else:
                             for button in game.buttons_in_game:
-                                if game.head.rect_collision.colliderect(button):
+                                if game.head.hitbox.colliderect(button):
                                     button.on = not button.on
                                     for num in button.num:
                                         for door in game.door_sprites:
@@ -153,7 +157,7 @@ def main():
                                                         game.opened_laser_sprites.remove(laser)
 
                             for vent in game.vent_sprites:
-                                if game.head.rect_collision.colliderect(vent.rect):
+                                if game.head.hitbox.colliderect(vent.rect):
                                     game.head.pos = pygame.Vector2(vent.dest[0]-10, vent.dest[1]-12)
                                     game.head.rect.x,game.head.rect.y = round(game.head.pos.x),round(game.head.pos.y)
                                     game.head.fall(dt)
@@ -329,6 +333,20 @@ def main():
                         game.music.stop()
                         game.music.play(game.level_music, -1)
 
-
+def prof_to_csv(prof: cProfile.Profile):
+    out_stream = io.StringIO()
+    pstats.Stats(prof, stream=out_stream).print_stats()
+    result = out_stream.getvalue()
+    # chop off header lines
+    result = 'ncalls' + result.split('ncalls')[-1]
+    lines = [','.join(line.rstrip().split(None, 5)) for line in result.split('\n')]
+    return '\n'.join(lines)
 if __name__ == "__main__":
+    pr = cProfile.Profile()
+    pr.enable()
     main()
+    pr.disable()
+    csv = prof_to_csv(pr)
+    with open("prof.csv", 'w+') as f:
+        #f.write(csv)
+        pass

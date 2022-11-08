@@ -45,6 +45,7 @@ class Player(Moving_sprite):
             #print(self.mask==self.idle_mask_mask)
             #print(self.debug_print_mask(self.check_collision()))
             #print("class is ",self.check_collision(tiles=False,return_sprite=True).__class__)
+        game.window.blit(self.mask.to_surface(),(self.rect.x+game.offset[0],self.rect.y+game.offset[1]))
         self.fall(dt)
 
         # Update state
