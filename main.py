@@ -1,7 +1,3 @@
-import cProfile
-import io
-import pstats
-
 import pygame
 from game import Game
 from menu import Menu
@@ -113,10 +109,11 @@ def main():
                         game.restart()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if game.action_button.rect.collidepoint(event.pos):
-                        game.action_button.click(True)
-                    if game.action2_button.rect.collidepoint(event.pos):
-                        game.action2_button.click(True)
+                    #if game.action_button.rect.collidepoint(event.pos):
+                    #    game.action_button.click(True)
+                    #if game.action2_button.rect.collidepoint(event.pos):
+                    #    game.action2_button.click(True)
+                    pass
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if game.action_button.clicking:
@@ -160,13 +157,13 @@ def main():
                                 if game.head.hitbox.colliderect(vent.rect):
                                     game.head.pos = pygame.Vector2(vent.dest[0]-10, vent.dest[1]-12)
                                     game.head.rect.x,game.head.rect.y = round(game.head.pos.x),round(game.head.pos.y)
-                                    game.head.fall(dt)
+                                    game.head.fall(dt,game)
                                     break
                     if game.action2_button.clicking:
                         game.action2_button.click(False)
                         if game.player_or_head:
                             game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
-                                             game.collidable_sprites, [game.head_sprite],game.player.speed)
+                                             game.collidable_sprites, [game.head_sprite],game.player.speed,game)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
                             game.action_button.image = game.action_button.images_with_head["head"]
@@ -200,7 +197,7 @@ def main():
                     if event.key == pygame.K_r:
                         if game.player_or_head:
                             game.head = Head(pygame.Vector2(game.player.pos.x,game.player.pos.y), game.map, game.tile_size, game.window, game.path,
-                                             game.collidable_sprites, [game.head_sprite],game.player.speed)
+                                             game.collidable_sprites, [game.head_sprite],game.player.speed,game)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
 
@@ -333,20 +330,5 @@ def main():
                         game.music.stop()
                         game.music.play(game.level_music, -1)
 
-def prof_to_csv(prof: cProfile.Profile):
-    out_stream = io.StringIO()
-    pstats.Stats(prof, stream=out_stream).print_stats()
-    result = out_stream.getvalue()
-    # chop off header lines
-    result = 'ncalls' + result.split('ncalls')[-1]
-    lines = [','.join(line.rstrip().split(None, 5)) for line in result.split('\n')]
-    return '\n'.join(lines)
 if __name__ == "__main__":
-    pr = cProfile.Profile()
-    pr.enable()
     main()
-    pr.disable()
-    csv = prof_to_csv(pr)
-    with open("prof.csv", 'w+') as f:
-        #f.write(csv)
-        pass

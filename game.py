@@ -112,7 +112,7 @@ class Game():
         self.player = Player(pygame.Vector2(3000, 100), self.map, self.tile_size, self.window, self.path,
                              self.collidable_sprites, [self.player_sprite], self.arm_sprite)
         self.head = Head(pygame.Vector2(3000, 0), self.map, self.tile_size, self.window, self.path,
-                         self.collidable_sprites, [self.head_sprite], self.player.speed)
+                         self.collidable_sprites, [self.head_sprite], self.player.speed,self)
         self.player_or_head = True  # Player is True, head is False
         self.arm_detached = False
 
@@ -148,7 +148,7 @@ class Game():
             self.blit_player(self.player_spritesheet, dt)
 
         else:
-            self.player.fall(dt)
+            self.player.fall(dt,self)
             self.blit_player(self.player_spritesheet, dt)
             time2 = pygame.time.get_ticks()
             print(f"The player falling is done in {time2 - time} ms")

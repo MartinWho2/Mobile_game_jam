@@ -1,6 +1,7 @@
 import pygame
 from moving_sprite import Moving_sprite
 from arm import Arm
+from fonctions import show_mask
 
 
 class Player(Moving_sprite):
@@ -22,11 +23,42 @@ class Player(Moving_sprite):
         # Arms
         self.arms_finish = arm_sprite
         self.arms = pygame.sprite.Group()
+
         self.idle_mask = pygame.image.load(self.path+"media/player/idle_mask.png").convert_alpha()
         self.idle_mask_mask = pygame.mask.from_surface(self.idle_mask)
         idle_mask = self.idle_mask_mask
         #self.debug_print_mask([self.idle_mask_mask])
         self.mask = idle_mask
+        self.hitbox, self.hitbox_diff = self.create_hitbox(idle_mask,self.pos)
+
+
+    def reput_hitbox(self):
+        self.hitbox.topleft = (self.rect.x+self.hitbox_diff[0],self.rect.y+self.hitbox_diff[1])
+    def create_hitbox(self,mask,offset):
+        size = mask.get_size()
+        firstPixel = [0,0]
+        for y in range(size[1]):
+            exiting = False
+            for x in range(size[0]):
+                if mask.get_at((x,y)) != 0:
+                    firstPixel = [x,y]
+                    exiting = True
+                    break
+            if exiting:
+                break
+
+
+        width = 0
+        for x in range(firstPixel[0],size[0]):
+            width += 1
+            if mask.get_at((x,firstPixel[1])) != 1:
+                break
+        height = 0
+        for y in range(firstPixel[1], size[1]):
+            height += 1
+            if mask.get_at((firstPixel[0], y)) == 0:
+                break
+        return pygame.rect.Rect(firstPixel[0]+offset.x,firstPixel[1]+offset.y,width,height),firstPixel
 
     def move(self, game, dt):
         # Key input
@@ -37,17 +69,23 @@ class Player(Moving_sprite):
             self.speed.x += self.w / 350 * dt
         self.pos.x += self.speed.x
         self.rect.x = round(self.pos.x)
-        hits = self.check_collision()
-        if hits:
-            movement = self.collide(hits, False)
+        self.reput_hitbox()
+        self.pos += self.check_collision_opti(self.speed,False,game)
+        self.rect.x = round(self.pos.x)
+        #hits = self.check_collision()
+        #if hits:
+        #    movement = self.collide(hits, False)
         #if self.check_collision():
             #print("collision again")
             #print(self.mask==self.idle_mask_mask)
             #print(self.debug_print_mask(self.check_collision()))
             #print("class is ",self.check_collision(tiles=False,return_sprite=True).__class__)
-        game.window.blit(self.mask.to_surface(),(self.rect.x+game.offset[0],self.rect.y+game.offset[1]))
-        self.fall(dt)
+        self.reput_hitbox()
+        #game.window.blit(self.mask.to_surface(), (self.rect.x + game.offset[0], self.rect.y + game.offset[1]))
 
+        self.fall(dt,game)
+        #pygame.draw.rect(game.window, "red", (self.hitbox.x + game.offset[0], self.hitbox.y + game.offset[1],
+        #                                      self.hitbox.w, self.hitbox.h))
         # Update state
         if self.is_jumping:
             self.state = 'jump'

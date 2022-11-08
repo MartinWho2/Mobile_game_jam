@@ -4,7 +4,7 @@ from moving_sprite import Moving_sprite
 
 class Head(Moving_sprite):
     def __init__(self, player_pos: pygame.Vector2, tiles, tile_size: int, window: pygame.Surface, path: str,
-                 groups_colliding, head_sprite_group, player_speed):
+                 groups_colliding, head_sprite_group, player_speed, game):
         self.image = pygame.image.load(path + 'media/head.png').convert_alpha()
         self.path = path
         player_pos.x += tile_size * 5 / 8
@@ -19,16 +19,16 @@ class Head(Moving_sprite):
         idle_mask = pygame.mask.from_surface(self.idle_mask)
         self.masks = {"idle": idle_mask}
         self.idle_idle_mask = idle_mask
-        self.animate_detachment(player_speed)
+        self.animate_detachment(player_speed, game)
         self.hitbox = self.mask.get_rect(midbottom=(self.rect.right, self.rect.bottom + self.rect.h))
         self.hitbox.h *= 6/5
         self.hitbox.w *= 23/25
         self.rect.w *= 2
         self.rect.h *= 2
 
-    def animate_detachment(self,speed:pygame.Vector2):
+    def animate_detachment(self,speed:pygame.Vector2, game):
         self.speed = pygame.Vector2(speed.x,speed.y-self.tile_size/10)
-        self.fall(1)
+        self.fall(1, game)
 
     def reput_hitbox(self):
         self.hitbox.center = (self.rect.centerx - self.rect.w / 50, self.rect.centery + self.rect.h * 13 / 60)
@@ -49,23 +49,15 @@ class Head(Moving_sprite):
         self.pos += self.check_collision_opti(self.speed,False,game)
         self.rect.x = round(self.pos.x)
         self.reput_hitbox()
-        #self.fall(dt)  # Vertical hits, see moving_sprite.py
-        self.pos.y += 0.5 * self.gravity * (dt ** 2) + self.speed.y * dt
-        self.speed.y += self.gravity * dt
-        if self.speed.y > self.MAX_SPEED:
-            self.speed.y = self.MAX_SPEED
-        self.rect.y = round(self.pos.y)
-        self.reput_hitbox()
-        self.pos += self.check_collision_opti(self.speed,True,game)
-        self.rect.y = round(self.pos.y)
-        self.reput_hitbox()
+        self.fall(dt, game)  # Vertical hits, see moving_sprite.py
+
 
         print(self.rect.w)
-        pygame.draw.rect(game.window, "red",
-                         (self.rect.x + game.offset[0], self.rect.y + game.offset[1],
-                          self.rect.w, self.rect.h))
-        pygame.draw.rect(game.window,"black",(self.hitbox.x+game.offset[0],self.hitbox.y+game.offset[1],
-                                              self.hitbox.w,self.hitbox.h))
+        #pygame.draw.rect(game.window, "red",
+        #                 (self.rect.x + game.offset[0], self.rect.y + game.offset[1],
+        #                  self.rect.w, self.rect.h))
+        #pygame.draw.rect(game.window,"black",(self.hitbox.x+game.offset[0],self.hitbox.y+game.offset[1],
+        #                                      self.hitbox.w,self.hitbox.h))
         # Update state
         if self.is_jumping:
             self.state = 'jump'

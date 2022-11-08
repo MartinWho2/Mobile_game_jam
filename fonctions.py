@@ -40,12 +40,16 @@ def create_map(path: str, level: int) -> list:
     return carte
 
 def show_mask(mask: pygame.mask.Mask):
+    a = False
     size = mask.get_size()
-    for column in range(size[0]):
-        for row in range(size[1]):
-            print(mask.get_at((column, row)),end="")
+    for y in range(size[1]):
+        for x in range(size[0]):
+            b = mask.get_at((x,y))
+            if b == 1 and not a:
+                a = [x,y]
+            print(b,end="")
         print()
-
+    print("FIRST AT ",a)
 def return_spritesheet(animations):
     output = []
     for idx, animation in enumerate(animations):

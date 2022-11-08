@@ -73,8 +73,10 @@ class Moving_sprite(pygame.sprite.Sprite):
                         get_hits.append(mask)
         print(f"Collision with sprites : player {pygame.time.get_ticks()-a}")
         return get_hits
+
     def reput_hitbox(self):
         pass
+
     def check_collision_opti(self, speed: pygame.Vector2, axis, game, tiles=True, sprite_groups=None,
                              return_sprite=False, breaking=False, masking=False):
         """
@@ -110,7 +112,6 @@ class Moving_sprite(pygame.sprite.Sprite):
                                     masks.append(mask)
                         elif self.hitbox.colliderect(tile_rect):
                             need_to_move = self.collide_opti(need_to_move,axis,speed,tile_rect)
-        a = False
         for group in sprite_groups:
             for element in group:
                 if self.hitbox.colliderect(element.rect):
@@ -227,14 +228,23 @@ class Moving_sprite(pygame.sprite.Sprite):
                     return row - found
             return size[1] - found
 
-    def fall(self, dt):
+    def fall(self, dt, game):
+        #self.pos.y += 0.5 * self.gravity * (dt ** 2) + self.speed.y * dt
+        #self.speed.y += self.gravity * dt
+        #if self.speed.y > self.MAX_SPEED:
+        #    self.speed.y = self.MAX_SPEED
+        #self.rect.y = round(self.pos.y)
+        #hits = self.check_collision()
+        #self.collide(hits, True)
         self.pos.y += 0.5 * self.gravity * (dt ** 2) + self.speed.y * dt
         self.speed.y += self.gravity * dt
         if self.speed.y > self.MAX_SPEED:
             self.speed.y = self.MAX_SPEED
         self.rect.y = round(self.pos.y)
-        hits = self.check_collision()
-        self.collide(hits, True)
+        self.reput_hitbox()
+        self.pos += self.check_collision_opti(self.speed, True, game)
+        self.rect.y = round(self.pos.y)
+        self.reput_hitbox()
 
     def breaking_glass(self, row, column):
         if self.tiles[row + 1][column] == 2:
