@@ -130,7 +130,7 @@ class Game:
         self.portal_sprites = pygame.sprite.Group()
         self.collidable_sprites = [self.door_sprites, self.glass_sprites, self.arm_sprite, self.tower_sprites]
         self.sprites_to_refresh = [self.door_sprites, self.glass_sprites, self.laser_sprites, self.tower_sprites,
-                                   self.buttons_in_game]
+                                   self.buttons_in_game, self.arm_sprite]
         self.texts = []
         self.map_image = self.create_map_image_sprites()
         # Player
@@ -227,8 +227,8 @@ class Game:
 
         time2 = pygame.time.get_ticks()
         print(f"The arms move in {time2 - time} ms")
-        for arm in self.player.arms:
-            self.window.blit(arm.image, (arm.rect.x + self.offset[0], arm.rect.y + self.offset[1]))
+        #for arm in self.player.arms:
+        #    self.window.blit(arm.image, (arm.rect.x + self.offset[0], arm.rect.y + self.offset[1]))
 
         print(f"the arms are blitted in {pygame.time.get_ticks() - time2} ms")
 
