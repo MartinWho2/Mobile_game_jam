@@ -12,4 +12,5 @@ class Button(pygame.sprite.Sprite):
         self.num = num
         self.tile_size = tile_size
         self.on = False
-
+        self.images = {True: self.image_on, False: self.image_off}
+        self.image = self.images[self.on]

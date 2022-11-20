@@ -115,11 +115,3 @@ class Player(Moving_sprite):
         if self.rect.x > self.w:
             self.rect.x = -self.rect.w
 
-    def debug_print_mask(self,masks:list[pygame.mask.Mask]):
-        for mask in masks:
-            size = mask.get_size()
-            for y in range(size[1]):
-                for x in range(size[0]):
-                    print(mask.get_at((x,y)),end="")
-                print("")
-            print("END MASK\n\n")
