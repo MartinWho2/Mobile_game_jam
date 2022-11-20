@@ -144,7 +144,8 @@ class Game:
         # Arms
         self.arms_available = 2
         self.arms_direction = pygame.Vector2(0, 0)
-        self.pointing_arrow = pygame.image.load(path + "media/pointing_arrow.png").convert_alpha()
+        self.pointing_arrow = pygame.transform.scale(pygame.image.load(path + "media/pointing_arrow.png").convert_alpha(),
+                                                     (self.w/30,self.w/80))
         self.distance = 0
 
         # Images
