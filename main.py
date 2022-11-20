@@ -107,6 +107,7 @@ def main():
                     if game.pause_button.rect.collidepoint(x, y):
                         in_game = False
                         menu.state = 4
+                        window.blit(gradient,(0,0))
                         game.music.stop()
                         game.music.play(game.menu_music,-1)
                     elif game.reset_button.rect.collidepoint(x, y):
@@ -334,9 +335,12 @@ def main():
                         if menu.resume_button.clicking:
                             if menu.resume_button.rect.collidepoint(event.pos):
                                 in_game = True
+                                menu.resume_button.click(False, window, [0, 0])
+                                game.blit_whole_level()
                                 game.music.stop()
                                 game.music.play(game.level_music, -1)
-                            menu.resume_button.click(False,window,[0,0])
+                            else:
+                                menu.resume_button.click(False, window, [0, 0])
                         if menu.menu_button.clicking:
                             menu.menu_button.click(False, window, [0, 0])
                             if menu.menu_button.rect.collidepoint(event.pos):
