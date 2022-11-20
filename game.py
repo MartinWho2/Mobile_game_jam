@@ -145,7 +145,7 @@ class Game:
         self.arms_available = 2
         self.arms_direction = pygame.Vector2(0, 0)
         self.pointing_arrow = pygame.transform.scale(pygame.image.load(path + "media/pointing_arrow.png").convert_alpha(),
-                                                     (self.w/30,self.w/80))
+                                                     (self.w/15,self.w/40))
         self.distance = 0
 
         # Images
@@ -372,12 +372,12 @@ class Game:
             blit(self.map_image, (rect.x + self.offset[0], rect.y + self.offset[1]), area=rect)
 
             # pygame.draw.rect(self.window, "red",rect)
-        for button in buttons:
-            blit(button.image,button.rect)
         for tile in glass_update:
             blit(self.glass_image, (tile[0] + self.offset[0], tile[1] + self.offset[1]))
         for sprite in self.sprites_to_update:
             blit(sprite.image, (sprite.rect.x + self.offset[0], sprite.rect.y + self.offset[1]))
+        for button in buttons:
+            blit(button.image,button.rect)
 
 
     def create_map_image_sprites(self):
