@@ -371,12 +371,13 @@ class Game:
             blit(self.map_image, (rect.x + self.offset[0], rect.y + self.offset[1]), area=rect)
 
             # pygame.draw.rect(self.window, "red",rect)
+        for button in buttons:
+            blit(button.image,button.rect)
         for tile in glass_update:
             blit(self.glass_image, (tile[0] + self.offset[0], tile[1] + self.offset[1]))
         for sprite in self.sprites_to_update:
             blit(sprite.image, (sprite.rect.x + self.offset[0], sprite.rect.y + self.offset[1]))
-        for button in buttons:
-            blit(button.image,button.rect)
+
 
     def create_map_image_sprites(self):
         map_y, map_x = len(self.map), len(self.map[1])

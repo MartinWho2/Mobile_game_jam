@@ -179,14 +179,14 @@ def main():
                             game.player_or_head = not game.player_or_head
                             game.action_button.image = game.action_button.images_with_head["head"]
                             game.action_button.button_state = True
-
+                            window.blit(game.action_button.image, game.action_button.rect)
                         else:
                             if pygame.sprite.collide_mask(game.player, game.head):
                                 game.head.kill()  # Alternate between player and head
                                 game.player_or_head = not game.player_or_head
                                 game.action_button.image = game.action_button.images_with_head["body"]
                                 game.action_button.button_state = False
-
+                                window.blit(game.action_button.image, game.action_button.rect)
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
@@ -211,11 +211,17 @@ def main():
                                              game.collidable_sprites, [game.head_sprite],game.player.speed,game)
                             game.player.state = f"without_head_{game.arms_available}"
                             game.player_or_head = not game.player_or_head
+                            game.action_button.image = game.action_button.images_with_head["head"]
+                            game.action_button.button_state = True
+                            window.blit(game.action_button.image, game.action_button.rect)
 
                         else:
                             if pygame.sprite.collide_mask(game.player, game.head):
                                 game.head.kill()  # Alternate between player and head
                                 game.player_or_head = not game.player_or_head
+                                game.action_button.image = game.action_button.images_with_head["body"]
+                                game.action_button.button_state = False
+                                window.blit(game.action_button.image, game.action_button.rect)
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
