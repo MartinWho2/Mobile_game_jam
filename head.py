@@ -50,9 +50,6 @@ class Head(Moving_sprite):
         self.rect.x = round(self.pos.x)
         self.reput_hitbox()
         self.fall(dt, game)  # Vertical hits, see moving_sprite.py
-
-
-        print(self.rect.w)
         #pygame.draw.rect(game.window, "red",
         #                 (self.rect.x + game.offset[0], self.rect.y + game.offset[1],
         #                  self.rect.w, self.rect.h))

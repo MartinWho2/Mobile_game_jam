@@ -1,7 +1,6 @@
 import pygame
 import math
 
-from fonctions import debug_print_mask
 from moving_sprite import Moving_sprite
 from laser import Laser
 
@@ -75,7 +74,6 @@ class Arm(Moving_sprite):
 
             else:
                 print("collided with arm ", laser.direction, "found collision at pixel ", found)
-                debug_print_mask([collision_mask])
                 laser_image = pygame.surface.Surface((found, laser.rect.h), pygame.SRCALPHA)
                 if laser.direction == "left":
                     laser_image.blit(laser.image, (-laser.rect.w + found, 0))

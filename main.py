@@ -22,6 +22,7 @@ def platform():
 
 def display_fps(dt):
     fps_text = fps_font.render(str(dt), False, (0, 0, 0))
+    pygame.draw.rect(window,"white",fps_text.get_rect())
     window.blit(fps_text, (0, 0))
 
 
@@ -69,7 +70,7 @@ def main():
                     pygame.quit()
                     running = False
                 elif event.type == pygame.FINGERMOTION and event.finger_id == game.buttons[game.action_button]:
-                        print(f"moving of x: {event.dx * window.get_width()}, y: {event.dy * window.get_height()}")
+                        print(f"moving finger of x: {event.dx * window.get_width()}, y: {event.dy * window.get_height()}")
                         game.finger_on_aim[1] = game.finger_on_aim[1] + event.dx * window.get_width()
                         game.finger_on_aim[2] = game.finger_on_aim[2] + event.dy * window.get_height()
 

@@ -158,32 +158,32 @@ class Game:
         self.sprites_to_update = []
         self.gradient = gradient
     def update(self, dt):
-        print(f"dt = {dt}")
-        time = pygame.time.get_ticks()
+        #print(f"dt = {dt}")
+        #time = pygame.time.get_ticks()
         self.blit_map_opti()
         self.rects_to_update = []
         self.sprites_to_update = []
 
-        time2 = pygame.time.get_ticks()
-        print(f"The map is blitted in {time2 - time} ms")
+        #time2 = pygame.time.get_ticks()
+        #print(f"The map is blitted in {time2 - time} ms")
 
         # self.blit_buttons()
 
-        time = pygame.time.get_ticks()
-        print(f"The buttons are blitted in {time - time2} ms")
+        #time = pygame.time.get_ticks()
+        #print(f"The buttons are blitted in {time - time2} ms")
 
         if self.player_or_head:
             previous_rect = self.player.rect
             self.player.move(self, dt)
             self.rects_to_update.append(smallest_rect(previous_rect, self.player.rect))
 
-            time2 = pygame.time.get_ticks()
-            print(f"The player movements are done in {time2 - time} ms")
+            #time2 = pygame.time.get_ticks()
+            #print(f"The player movements are done in {time2 - time} ms")
 
             self.blit_player(self.player_spritesheet, dt)
 
-            time = pygame.time.get_ticks()
-            print(f"The player is blitted in {time - time2} ms")
+            #time = pygame.time.get_ticks()
+            #print(f"The player is blitted in {time - time2} ms")
 
         else:
             previous_rect = self.player.rect
@@ -191,20 +191,20 @@ class Game:
             self.rects_to_update.append(smallest_rect(previous_rect, self.player.rect))
             self.blit_player(self.player_spritesheet, dt)
 
-            time2 = pygame.time.get_ticks()
-            print(f"The player falling is done in {time2 - time} ms")
+            #time2 = pygame.time.get_ticks()
+            #print(f"The player falling is done in {time2 - time} ms")
 
             previous_rect = self.head.rect
             self.head.move(self, dt)
             self.rects_to_update.append(smallest_rect(previous_rect, self.head.rect))
 
-            time = pygame.time.get_ticks()
-            print(f"The head moves in {time - time2} ms")
+            #time = pygame.time.get_ticks()
+            #print(f"The head moves in {time - time2} ms")
 
             self.blit_head(self.head_spritesheet, dt)
 
-            time2 = pygame.time.get_ticks()
-            print(f"The head moves in {time2 - time} ms")
+            #time2 = pygame.time.get_ticks()
+            #print(f"The head moves in {time2 - time} ms")
 
         # Action button
         if self.action_button.clicking:
@@ -218,19 +218,19 @@ class Game:
                     for rect in rects:
                         self.rects_to_update.append(rect)
                 self.window.blit(self.action_button.image, self.action_button.rect)
-        time = pygame.time.get_ticks()
+        #time = pygame.time.get_ticks()
         for arm in self.player.arms:
             if arm.moving:
                 previous_rect = arm.rect
                 arm.move(dt, self.laser_sprites, self)
                 self.rects_to_update.append(smallest_rect(previous_rect, arm.rect))
 
-        time2 = pygame.time.get_ticks()
-        print(f"The arms move in {time2 - time} ms")
-        #for arm in self.player.arms:
-        #    self.window.blit(arm.image, (arm.rect.x + self.offset[0], arm.rect.y + self.offset[1]))
-
-        print(f"the arms are blitted in {pygame.time.get_ticks() - time2} ms")
+        #time2 = pygame.time.get_ticks()
+        #print(f"The arms move in {time2 - time} ms")
+        for arm in self.player.arms:
+            if arm not in self.arm_sprite:
+                self.window.blit(arm.image, (arm.rect.x + self.offset[0], arm.rect.y + self.offset[1]))
+        #print(f"the arms are blitted in {pygame.time.get_ticks() - time2} ms")
 
         # Check if game is over
         if self.head.rect.colliderect(self.portal_rect) or self.player.rect.colliderect(self.portal_rect):
@@ -301,11 +301,12 @@ class Game:
 
     def blit_buttons(self):
         for button in self.buttons_interface:
-            print(button.name, button.rect.x, button.rect.y, button.image.get_width(), button.image.get_height())
+            #print(button.name, button.rect.x, button.rect.y, button.image.get_width(), button.image.get_height())
             self.window.blit(button.image, (button.rect.x, button.rect.y))
 
     def blit_whole_level(self):
         blit = self.window.blit
+        blit(self.gradient,(0,0))
         blit(self.map_image, self.offset)
         for group in (self.player.arms, self.laser_sprites, self.door_sprites, self.buttons_in_game):
             for sprite in group:
