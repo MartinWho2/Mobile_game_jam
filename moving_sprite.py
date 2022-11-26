@@ -97,7 +97,6 @@ class Moving_sprite(pygame.sprite.Sprite):
         """
         if sprite_groups is None:
             sprite_groups = self.sprite_elements
-        masks = []
         need_to_move = pygame.Vector2(0, 0)
         if abs(self.speed.y) > 4:
             self.on_ground = False
@@ -115,7 +114,11 @@ class Moving_sprite(pygame.sprite.Sprite):
                     if group == game.arm_sprite:
                         mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
                         if mask.count() and self not in game.player.arms:
-                            self.collide([mask], axis)
+                            move = self.collide([mask], axis, move_bool=False)
+                            if axis and abs(move) > abs(need_to_move.y):
+                                need_to_move.y = move
+                            elif (not axis) and abs(move) > abs(need_to_move.x):
+                                need_to_move.x = move
                     else:
                         need_to_move = self.collide_opti(need_to_move, axis, speed, element.rect)
                     if return_sprite:
@@ -159,7 +162,7 @@ class Moving_sprite(pygame.sprite.Sprite):
             speed.x = 0
         return need_to_move
 
-    def collide(self, hits: list, axis: bool) -> int:
+    def collide(self, hits: list, axis: bool, move_bool=True) -> int:
         """
         Deals with detected collision
         :param hits: Masks colliding with the entity
@@ -170,7 +173,8 @@ class Moving_sprite(pygame.sprite.Sprite):
             if axis:
                 if self.speed.y > 0:
                     movement = self.find_bits_from_mask(mask, "down")
-                    self.pos.y -= movement
+                    if move_bool:
+                        self.pos.y -= movement
                     self.is_jumping = False
                     self.on_ground = True
                     if self.__class__ == player.Player:
@@ -178,18 +182,21 @@ class Moving_sprite(pygame.sprite.Sprite):
                             self.state = 'idle'
                 elif self.speed.y <= 0:
                     movement = self.find_bits_from_mask(mask, "up")
-                    self.pos.y += movement
+                    if move_bool:
+                        self.pos.y += movement
                 self.speed.y = 0
                 self.rect.y = round(self.pos.y)
 
             else:
                 if self.speed.x > 0:
                     movement = self.find_bits_from_mask(mask, "right")
-                    self.pos.x -= movement
+                    if move_bool:
+                        self.pos.x -= movement
                     movement = -movement
                 elif self.speed.x <= 0:
                     movement = self.find_bits_from_mask(mask, "left")
-                    self.pos.x += movement
+                    if move_bool:
+                        self.pos.x += movement
                 self.speed.x = 0
                 self.rect.x = round(self.pos.x)
             return movement

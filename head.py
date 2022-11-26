@@ -37,9 +37,9 @@ class Head(Moving_sprite):
         # Key input
         self.speed.x = 0
         if game.buttons[game.button_left] is not False:
-            self.speed.x += -self.w / 230 * dt
+            self.speed.x -= 4.7 * dt
         if game.buttons[game.button_right] is not False:
-            self.speed.x += self.w / 230 * dt
+            self.speed.x += 4.7 * dt
         self.pos.x += self.speed.x
         self.rect.x = round(self.pos.x)
         self.reput_hitbox()

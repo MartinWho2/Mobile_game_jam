@@ -64,9 +64,9 @@ class Player(Moving_sprite):
         # Key input
         self.speed.x = 0
         if game.buttons[game.button_left] is not False:
-            self.speed.x += -self.w / 350 * dt
+            self.speed.x -= 3 * dt
         if game.buttons[game.button_right] is not False:
-            self.speed.x += self.w / 350 * dt
+            self.speed.x += 3 * dt
         self.pos.x += self.speed.x
         self.rect.x = round(self.pos.x)
         self.reput_hitbox()
