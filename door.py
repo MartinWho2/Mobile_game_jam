@@ -6,9 +6,9 @@ class Door(pygame.sprite.Sprite):
         super().__init__()
         self.tile_size = tile_size
         if turned:
-            self.image = pygame.transform.rotate(pygame.image.load(path + 'media/door.png').convert_alpha(),90)
+            self.image = pygame.transform.rotate(pygame.image.load(path + 'media/new_door.png').convert_alpha(),90)
         else:
-            self.image = pygame.image.load(path + 'media/door.png').convert_alpha()
+            self.image = pygame.image.load(path + 'media/new_door.png').convert_alpha()
 
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()

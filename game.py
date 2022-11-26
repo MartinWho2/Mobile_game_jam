@@ -85,15 +85,17 @@ class Game:
                               round(action3_surface.get_height() / 2 - head_button_image.get_height() / 2)))
         action_surface.blit(arm_image, (action_surface.get_width() / 2 - arm_image.get_width() / 2,
                                         action_surface.get_height() / 2 - arm_image.get_height() / 2))
-        action_behind = action_surface.copy()
-        action_behind.blit(gradient, (-self.w * 5 / 7, -self.h * 5.5 / 7))
-        self.action_button = Int_button(action_surface, pygame.Vector2(self.w * 5 / 7, self.h * 5.5 / 7),
+        action_behind = pygame.transform.scale(action_surface.copy(),
+                                               (round(self.w/16),
+                                                round(round(self.w/16)*action_surface.get_width()/action_surface.get_height())))
+        action_behind.blit(gradient, (-round(self.w * 5 / 7), -round(self.h * 5.5 / 7)))
+        self.action_button = Int_button(action_surface, pygame.Vector2(round(self.w * 5 / 7), round(self.h * 5.5 / 7)),
                                         round(self.w / 16), action_behind, name="action", images=action3_surface)
         action2_surface = pygame.image.load(self.path + 'media/action_button.png').convert_alpha()
         action2_surface.blit(head_image, (round(action_surface.get_width() / 2 - head_image.get_width() / 2),
                                           round(action_surface.get_height() / 2 - head_image.get_height() / 2)))
-        action2_behind = action2_surface.copy()
-        action2_behind.blit(gradient, (-self.w * 4 / 7, -self.h * 5.5 / 7))
+        action2_behind = action_behind.copy()
+        action2_behind.blit(gradient, (-(self.w * 4 / 7), -(self.h * 5.5 / 7)))
 
         self.action2_button = Int_button(action2_surface, pygame.Vector2(self.w * 4 / 7, self.h * 5.5 / 7),
                                          round(self.w / 16), action2_behind, name="action2")
