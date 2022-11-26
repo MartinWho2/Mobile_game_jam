@@ -42,7 +42,7 @@ def main():
                 gradient.set_at((col, row), (150, 150, 150))
     gradient.set_at((2, 2), (200, 200, 200))
     gradient = pygame.transform.smoothscale(gradient, window.get_size())
-    gradient.blit(pygame.transform.scale(pygame.image.load(path+"media/cave.jpg").convert(),gradient.get_size()),(0,0))
+    gradient.blit(pygame.transform.scale(pygame.image.load(path+"media/cave.png").convert(),gradient.get_size()),(0,0))
     game = Game(window, path, gradient)
     menu = Menu(window, path, gradient)
     before = time.time()

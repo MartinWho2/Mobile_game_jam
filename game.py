@@ -20,7 +20,7 @@ class Game:
     def __init__(self, window: pygame.surface.Surface, path: str, gradient):
         self.window = window
         self.menu_music = pygame.mixer.Sound(path + "media/menu_music.wav")
-        self.level_music = pygame.mixer.Sound(path + "media/level_music.wav")
+        self.level_music = pygame.mixer.Sound(path + "media/music_game.wav")
         self.music = pygame.mixer.Channel(1)
         self.music.set_volume(0)
         self.music.play(self.menu_music, -1)
