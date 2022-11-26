@@ -172,9 +172,9 @@ class Moving_sprite(pygame.sprite.Sprite):
         for mask in hits:
             if axis:
                 if self.speed.y > 0:
-                    movement = self.find_bits_from_mask(mask, "down")
+                    movement = -self.find_bits_from_mask(mask, "down")
                     if move_bool:
-                        self.pos.y -= movement
+                        self.pos.y += movement
                     self.is_jumping = False
                     self.on_ground = True
                     if self.__class__ == player.Player:
@@ -189,10 +189,9 @@ class Moving_sprite(pygame.sprite.Sprite):
 
             else:
                 if self.speed.x > 0:
-                    movement = self.find_bits_from_mask(mask, "right")
+                    movement = -self.find_bits_from_mask(mask, "right")
                     if move_bool:
-                        self.pos.x -= movement
-                    movement = -movement
+                        self.pos.x += movement
                 elif self.speed.x <= 0:
                     movement = self.find_bits_from_mask(mask, "left")
                     if move_bool:
