@@ -8,7 +8,7 @@ dictionnaire = {
         [[(10, 1), 0, False, False], [(16, 4), 1, True, True], [(10, 8), 2, False, False], [(5, 11), 3, True, True]],
         [[(4, 5), 0, False, False]],
         [[(10, 11), 0, False, False], [(16, 11), 1, False, False]],
-        [[(14,1), 0, False, False], [(19, 7), 2, True, True]],
+        [[(14,1), 0, False, False], [(18, 3), 2, True, False]],
         [[(22, 11), 0, False, False], [(25, 9), 1, True, True], [(13, 6), 2, False, False]]
     ],
     'vent': [
@@ -39,7 +39,7 @@ dictionnaire = {
         [],
         [[(6, 13), 1, 'right', False]],
         [[(14, 8), 2, 'left', False]],
-        [[(17, 1), 3, 'down', False], [(18, 11), 4, 'right', False], [(8, 7), 5, 'down', True]],
+        [[(17, 1), 3, 'down', False], [(21, 11), 4, 'left', False], [(8, 7), 5, 'down', True]],
         [[(18, 4), 3, 'right', False]]
     ],
     'portal': [
