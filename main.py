@@ -122,7 +122,7 @@ def main():
                     pass
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if game.action_button.clicking:
+                    if game.action_button.clicking or pygame.mouse.get_pos()[1] > 700:
                         game.action_button.click(False,window,game.offset)
                         if game.player_or_head:
                             if game.arms_available > 0 and game.finger_on_aim[0] is False:
@@ -234,7 +234,9 @@ def main():
                     elif event.key == pygame.K_w:
                         game.buttons[game.button_up] = False
                         game.button_up.click(False,window,game.offset)
-
+                    elif event.key == pygame.K_p:
+                        game.buttons[game.action_button] = False
+                        game.action_button.click(False,window,game.offset)
                     elif event.key == pygame.K_ESCAPE:
                         game.buttons[game.pause_button] = False
                         game.pause_button.click(False,window,game.offset)
