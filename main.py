@@ -6,9 +6,12 @@ from sys import platform as _sys_platform
 from os import environ
 import time
 from head import Head
+from engine import Graphic_engine
 
 pygame.init()
-window = pygame.display.set_mode((1280, 720))
+window = pygame.Surface((1280,720)).convert((255, 65282, 16711681, 0))
+pygame.display.set_mode((1280, 720),pygame.DOUBLEBUF|pygame.OPENGL)
+shader = Graphic_engine(window,(1280,720))
 fps_font = pygame.font.SysFont("arial",30)
 clock = pygame.time.Clock()
 fps = 60
@@ -57,7 +60,8 @@ def main():
         if dt > 5:
             dt = 5.0
         display_fps(clock.get_fps())
-        pygame.display.flip()
+        #pygame.display.flip()
+        shader()
         #window.blit(gradient,(0,0))
         if in_game:
             msg = game.update(dt)
